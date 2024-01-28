@@ -24,8 +24,8 @@ abstract class SimpleAndroidNotificationPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+  Future<String?> getPayload() {
+    throw UnimplementedError('getPayload() has not been implemented.');
   }
 
   Future<String> checkPermission() {

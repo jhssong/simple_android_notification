@@ -11,9 +11,9 @@ class MethodChannelSimpleAndroidNotification
   /// The method channel used to interact with the native platform.
 
   @override
-  Future<String> getPlatformVersion() async {
-    final version = await _channel.invokeMethod<String>('getPlatformVersion');
-    return version ?? 'Unknown platform version';
+  Future<String?> getPayload() async {
+    final version = await _channel.invokeMethod<String>('getPayloadFromIntent');
+    return version;
   }
 
   @override
