@@ -17,21 +17,36 @@ class MethodChannelSimpleAndroidNotification
   }
 
   @override
-  Future<String> checkPermission() async {
+  Future<void> createChannel(
+    String id,
+    String name,
+    String desc,
+    int importance,
+  ) async {
+    await _channel
+        .invokeMethod<void>('createNotificationChannel', <String, dynamic>{
+      'id': id,
+      'name': name,
+      'desc': desc,
+      'importance': importance,
+    });
+  }
+
+  @override
+  Future<bool?> checkPermission() async {
     final hasPermission =
-        await _channel.invokeMethod<String>('checkNotificationPermission');
-    return hasPermission ?? "false";
+        await _channel.invokeMethod<bool?>('checkNotificationPermission');
+    return hasPermission;
   }
 
   @override
   Future<void> requestPermission() async {
-    await _channel.invokeMethod<void>('requestNotificationPermission');
-    return;
+    await _channel.invokeMethod<String?>('requestNotificationPermission');
   }
 
   @override
   Future<void> show() async {
-    await _channel.invokeMethod<String>('showNotification');
-    return;
+    // TODO check if channel is created and have the notification permissions
+    await _channel.invokeMethod<String?>('showNotification');
   }
 }

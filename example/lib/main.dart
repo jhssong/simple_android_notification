@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String? _payload;
-  String _hasNotificationPermission = 'false';
+  bool _hasNotificationPermission = false;
   final _simpleAndroidNotificationPlugin = SimpleAndroidNotification();
 
   @override
@@ -27,20 +27,13 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> getPayload() async {
     String? payload = await _simpleAndroidNotificationPlugin.getPayload();
-
-    setState(() {
-      _payload = payload;
-    });
+    setState(() => _payload = payload);
   }
 
   Future<void> hasNotificationPermission() async {
-    String hasNotificationPermission;
-    hasNotificationPermission =
-        await _simpleAndroidNotificationPlugin.checkPermission();
-
-    setState(() {
-      _hasNotificationPermission = hasNotificationPermission;
-    });
+    bool hasNotificationPermission =
+        await _simpleAndroidNotificationPlugin.checkPermission() ?? false;
+    setState(() => _hasNotificationPermission = hasNotificationPermission);
   }
 
   Future<void> requestPermission() async {

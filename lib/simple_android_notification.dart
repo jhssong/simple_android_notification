@@ -5,7 +5,17 @@ class SimpleAndroidNotification {
     return SimpleAndroidNotificationPlatform.instance.getPayload();
   }
 
-  Future<String> checkPermission() {
+  Future<void> createChannel(
+    String id,
+    String name,
+    String desc,
+    int importance,
+  ) {
+    return SimpleAndroidNotificationPlatform.instance
+        .createChannel(id, name, desc, importance);
+  }
+
+  Future<bool?> checkPermission() {
     return SimpleAndroidNotificationPlatform.instance.checkPermission();
   }
 

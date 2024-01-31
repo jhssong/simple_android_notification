@@ -28,7 +28,16 @@ abstract class SimpleAndroidNotificationPlatform extends PlatformInterface {
     throw UnimplementedError('getPayload() has not been implemented.');
   }
 
-  Future<String> checkPermission() {
+  Future<void> createChannel(
+    String id,
+    String name,
+    String desc,
+    int importance,
+  ) {
+    throw UnimplementedError('createChannel() has not been implemented.');
+  }
+
+  Future<bool?> checkPermission() {
     throw UnimplementedError('checkPermission() has not been implemented.');
   }
 
