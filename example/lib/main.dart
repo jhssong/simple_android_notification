@@ -16,13 +16,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String? _payload;
+  List<dynamic> _listendArray = [];
   bool _hasNotificationPermission = false;
+  final bool _hasNotificationListenerPermission = false;
   final _simpleAndroidNotificationPlugin = SimpleAndroidNotification();
 
   @override
   void initState() {
     super.initState();
     getPayload();
+    hasNotificationPermission();
   }
 
   Future<void> getPayload() async {
@@ -32,16 +35,28 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> hasNotificationPermission() async {
     bool hasNotificationPermission =
-        await _simpleAndroidNotificationPlugin.checkPermission() ?? false;
+        await _simpleAndroidNotificationPlugin.checkNotificationPermission() ??
+            false;
     setState(() => _hasNotificationPermission = hasNotificationPermission);
   }
 
-  Future<void> requestPermission() async {
-    await _simpleAndroidNotificationPlugin.requestPermission();
+  Future<void> requestNotificationPermission() async {
+    await _simpleAndroidNotificationPlugin.requestNotificationPermission();
   }
 
   Future<void> show() async {
     await _simpleAndroidNotificationPlugin.show();
+  }
+
+  Future<void> requestNotificationListenerPermission() async {
+    await _simpleAndroidNotificationPlugin
+        .openNotificationListenerPermissionSettingScreen();
+  }
+
+  Future<void> getListenedNotificationsList() async {
+    final List<dynamic> array =
+        await _simpleAndroidNotificationPlugin.getListenedNotificationsList();
+    setState(() => _listendArray = array);
   }
 
   @override
@@ -52,26 +67,54 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           children: [
+            Center(child: Text('Payload: $_payload')),
+            const Center(
+                child: Text(
+              "if app was opened by tapping the notification",
+              style: TextStyle(fontSize: 12, color: Colors.black45),
+            )),
             Center(
-              child: Text('Running on: $_payload\n'),
+              child: Text(
+                  'hasNotificationPermission : $_hasNotificationPermission'),
+            ),
+            Center(
+              child: Text(
+                  'hasNotificationListenerPermission : $_hasNotificationListenerPermission'),
             ),
             ElevatedButton(
               onPressed: show,
               child: const Text('Show notification'),
-            ),
-            Center(
-              child: Text(
-                  'hasNotificationPermission? : $_hasNotificationPermission'),
             ),
             ElevatedButton(
               onPressed: hasNotificationPermission,
               child: const Text('Check hasNotificationPermission'),
             ),
             ElevatedButton(
-              onPressed: requestPermission,
-              child: const Text('request permission'),
+              onPressed: requestNotificationPermission,
+              child: const Text('request notification permission'),
             ),
+            ElevatedButton(
+              onPressed: requestNotificationListenerPermission,
+              child: const Text('open listener permission setting screen'),
+            ),
+            ElevatedButton(
+              onPressed: getListenedNotificationsList,
+              child: const Text("get listened notifications"),
+            ),
+            for (var i = 0; i < _listendArray.length; i++)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Title: ${_listendArray[i]['title']}'),
+                  Text('Text: ${_listendArray[i]['text']}'),
+                  Text('BigText: ${_listendArray[i]['bigText']}'),
+                  Text('InfoText: ${_listendArray[i]['infoText']}'),
+                  Text('SubText: ${_listendArray[i]['subText']}'),
+                  Text('SummaryText: ${_listendArray[i]['summaryText']}'),
+                ],
+              ),
           ],
         ),
       ),

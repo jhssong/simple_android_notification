@@ -37,16 +37,27 @@ abstract class SimpleAndroidNotificationPlatform extends PlatformInterface {
     throw UnimplementedError('createChannel() has not been implemented.');
   }
 
-  Future<bool?> checkPermission() {
-    throw UnimplementedError('checkPermission() has not been implemented.');
+  Future<bool?> checkNotificationPermission() {
+    throw UnimplementedError(
+        'checkNotificationPermission() has not been implemented.');
   }
 
-  Future<void> requestPermission() {
-    throw UnimplementedError('requestPermission() has not been implemented.');
+  Future<void> requestNotificationPermission() {
+    throw UnimplementedError(
+        'requestNotificationPermission() has not been implemented.');
   }
 
-  // Show the notification
   Future<void> show() {
     throw UnimplementedError('show() has not been implemented.');
+  }
+
+  Future<void> openNotificationListenerPermissionSettingScreen() {
+    throw UnimplementedError(
+        'openNotificationListenerPermissionSettingScreen() has not been implemented.');
+  }
+
+  Future<List<dynamic>> getListenedNotificationsList() {
+    throw UnimplementedError(
+        'getListenedNotificationsList() has not been implemented.');
   }
 }

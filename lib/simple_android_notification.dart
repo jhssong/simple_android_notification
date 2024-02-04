@@ -15,15 +15,27 @@ class SimpleAndroidNotification {
         .createChannel(id, name, desc, importance);
   }
 
-  Future<bool?> checkPermission() {
-    return SimpleAndroidNotificationPlatform.instance.checkPermission();
+  Future<bool?> checkNotificationPermission() {
+    return SimpleAndroidNotificationPlatform.instance
+        .checkNotificationPermission();
   }
 
-  Future<void> requestPermission() {
-    return SimpleAndroidNotificationPlatform.instance.requestPermission();
+  Future<void> requestNotificationPermission() {
+    return SimpleAndroidNotificationPlatform.instance
+        .requestNotificationPermission();
   }
 
   Future<void> show() {
     return SimpleAndroidNotificationPlatform.instance.show();
+  }
+
+  Future<void> openNotificationListenerPermissionSettingScreen() {
+    return SimpleAndroidNotificationPlatform.instance
+        .openNotificationListenerPermissionSettingScreen();
+  }
+
+  Future<List<dynamic>> getListenedNotificationsList() {
+    return SimpleAndroidNotificationPlatform.instance
+        .getListenedNotificationsList();
   }
 }

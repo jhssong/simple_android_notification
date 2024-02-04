@@ -1,8 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import 'simple_android_notification_platform_interface.dart';
 
-const _methodChannel = 'jhssong.com/simple_android_notification';
+const _methodChannel = 'jhssong/simple_android_notification';
 const _channel = MethodChannel(_methodChannel);
 
 /// An implementation of [SimpleAndroidNotificationPlatform] that uses method channels.
@@ -33,14 +34,14 @@ class MethodChannelSimpleAndroidNotification
   }
 
   @override
-  Future<bool?> checkPermission() async {
+  Future<bool?> checkNotificationPermission() async {
     final hasPermission =
         await _channel.invokeMethod<bool?>('checkNotificationPermission');
     return hasPermission;
   }
 
   @override
-  Future<void> requestPermission() async {
+  Future<void> requestNotificationPermission() async {
     await _channel.invokeMethod<String?>('requestNotificationPermission');
   }
 
@@ -48,5 +49,19 @@ class MethodChannelSimpleAndroidNotification
   Future<void> show() async {
     // TODO check if channel is created and have the notification permissions
     await _channel.invokeMethod<String?>('showNotification');
+  }
+
+  @override
+  Future<void> openNotificationListenerPermissionSettingScreen() async {
+    await _channel.invokeMethod<String?>(
+        'openNotificationListenerPermissionSettingScreen');
+  }
+
+  @override
+  Future<List<dynamic>> getListenedNotificationsList() async {
+    final String res =
+        await _channel.invokeMethod('getListenedNotificationsList');
+    final List<dynamic> jsonArray = json.decode(res);
+    return jsonArray;
   }
 }
