@@ -12,7 +12,6 @@ import org.json.JSONObject;
 public class SharedPref {
     private final Context context;
 
-
     SharedPref(Context context) {
         this.context = context;
     }

@@ -13,6 +13,8 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.jhssong.simple_android_notification.models.NotificationInfo;
 
+import org.json.JSONArray;
+
 import java.util.Set;
 
 import io.flutter.Log;
@@ -41,7 +43,8 @@ public class SimpleNotificationListener extends NotificationListenerService {
 
     public static String getListenedNotificationsList(Context context) {
         SharedPref pref = new SharedPref(context);
-        return pref.getPref(Constants.LISTENED_NOTIFICATIONS_KEY).toString();
+        JSONArray listenedNotificationsList = pref.getPref(Constants.LISTENED_NOTIFICATIONS_KEY);
+        return listenedNotificationsList.toString();
     }
 
     // TODO Update ListenedNotification List
@@ -62,17 +65,18 @@ public class SimpleNotificationListener extends NotificationListenerService {
         String extraSubText = extras.getString(Notification.EXTRA_SUB_TEXT, "");
         String extraSummaryText = extras.getString(Notification.EXTRA_SUMMARY_TEXT, "");
 
-        Log.d(Constants.LOG_TAG, "onNotificationPosted:\n" +
-                "PackageName: " + packageName + "\n" +
-                "Title: " + extraTitle + "\n" +
-                "Text: " + extraText + "\n" +
-                "BigText: " + extraBigText + "\n" +
-                "InfoText: " + extraInfoText + "\n" +
-                "SubText: " + extraSubText + "\n" +
-                "SummaryText: " + extraSummaryText + "\n"
-        );
+//        Log.d(Constants.LOG_TAG, "onNotificationPosted:\n" +
+//                "PackageName: " + packageName + "\n" +
+//                "Title: " + extraTitle + "\n" +
+//                "Text: " + extraText + "\n" +
+//                "BigText: " + extraBigText + "\n" +
+//                "InfoText: " + extraInfoText + "\n" +
+//                "SubText: " + extraSubText + "\n" +
+//                "SummaryText: " + extraSummaryText + "\n"
+//        );
 
-        NotificationInfo sbnData = new NotificationInfo(packageName, extraTitle, extraText, extraBigText,
+        NotificationInfo sbnData = new NotificationInfo(
+                packageName, extraTitle, extraText, extraBigText,
                 extraInfoText, extraSubText, extraSummaryText);
 
         Context context = getApplicationContext();

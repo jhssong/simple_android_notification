@@ -1,21 +1,18 @@
 package com.jhssong.simple_android_notification;
 
-import static com.jhssong.simple_android_notification.SimpleNotificationListener.hasNotificationListenerPermission;
 import static com.jhssong.simple_android_notification.SimpleNotificationListener.getListenedNotificationsList;
+import static com.jhssong.simple_android_notification.SimpleNotificationListener.hasNotificationListenerPermission;
 import static com.jhssong.simple_android_notification.SimpleNotificationListener.openNotificationListenerPermissionSetting;
 
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationManagerCompat;
 
-import java.util.Set;
+import com.jhssong.simple_android_notification.models.NotificationChannelInfo;
 
 import io.flutter.Log;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -54,10 +51,17 @@ public class SimpleAndroidNotificationPlugin
         Log.d(Constants.LOG_TAG, "onAttachedToActivity Function!");
         this.activity = binding.getActivity();
         simpleNotification = new SimpleNotification(context, activity, notificationManager);
+        // Set Default Notification Channel
+        simpleNotification.createNotificationChannel(Constants.DEFAULT_CHANNEL_INFO);
     }
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+        final String id = call.argument("id");
+        final String name = call.argument("name");
+        final String desc = call.argument("desc");
+        final int importance = Constants.getImportance(call.argument("importance"));
+
         switch (call.method) {
             case "getPayload":
                 result.success(getPayload());
@@ -66,18 +70,16 @@ public class SimpleAndroidNotificationPlugin
                 result.success(simpleNotification.checkNotificationChannelEnabled(Constants.DEFAULT_CHANNEL_ID));
                 break;
             case "createNotificationChannel":
-                final String id = call.argument("id");
-                final String name = call.argument("name");
-                final String desc = call.argument("desc");
-                final int importance = Constants.getImportance(call.argument("importance"));
-                simpleNotification.createNotificationChannel(id, name, desc, importance);
+                NotificationChannelInfo info = new NotificationChannelInfo(id, name, desc, importance);
+                simpleNotification.createNotificationChannel(info);
                 result.success(simpleNotification.checkNotificationChannelEnabled(id));
                 break;
-
-            // TODO Delete Notification channel
-
-            // TODO Get Notification Channel List
-
+            case "removeNotificationChannel":
+                simpleNotification.removeNotificationChannel(id);
+                result.success(simpleNotification.checkNotificationChannelEnabled(id));
+            case "getNotificationChannelList":
+                result.success(simpleNotification.getNotificationChannelList());
+                break;
             case "hasNotificationPermission":
                 result.success(simpleNotification.hasNotificationPermission());
                 break;

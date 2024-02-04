@@ -15,6 +15,12 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import com.jhssong.simple_android_notification.models.NotificationChannelInfo;
+
+import org.json.JSONArray;
+
+import java.util.List;
+
 
 public class SimpleNotification {
     private final Context context;
@@ -25,8 +31,6 @@ public class SimpleNotification {
         this.context = context;
         this.activity = activity;
         this.notificationManager = notificationManager;
-        createNotificationChannel(Constants.DEFAULT_CHANNEL_ID, Constants.DEFAULT_CHANNEL_NAME,
-                Constants.DEFAULT_CHANNEL_DESC, Constants.DEFAULT_CHANNEL_IMPORTANCE);
     }
 
     public boolean checkNotificationChannelEnabled(String id) {
@@ -37,18 +41,37 @@ public class SimpleNotification {
         return true;
     }
 
-    public void createNotificationChannel(
-            String id, CharSequence name, String description, int importance) {
+    public void createNotificationChannel(NotificationChannelInfo info) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(id, name, importance);
-            channel.setDescription(description);
+            NotificationChannel channel = new NotificationChannel(info.id, info.name, info.importance);
+            channel.setDescription(info.description);
             notificationManager.createNotificationChannel(channel);
         }
     }
 
-    // TODO Delete Notification Channel
+    public void removeNotificationChannel(String id) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager.deleteNotificationChannel(id);
+        }
+    }
 
-    // TODO Get Notification Channel List
+    public String getNotificationChannelList() {
+        JSONArray channelArray = new JSONArray();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            List<NotificationChannel> channels = notificationManager.getNotificationChannels();
+            for (NotificationChannel channel : channels) {
+                String id = channel.getId();
+                CharSequence name = channel.getName();
+                String desc = channel.getDescription();
+                int importance = channel.getImportance();
+
+                NotificationChannelInfo info = new NotificationChannelInfo(id, name, desc, importance);
+                channelArray.put(info.getAsJSON());
+            }
+        }
+        return channelArray.toString();
+    }
 
     public boolean hasNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

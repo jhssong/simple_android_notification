@@ -4,14 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import com.jhssong.simple_android_notification.models.NotificationChannelInfo;
+
 public final class Constants {
     public static final String METHOD_CHANNEL = "jhssong/simple_android_notification";
     public static final String LOG_TAG = "simple_notification";
 
     public static final String DEFAULT_CHANNEL_ID = "Default Channel";
-    public static final String DEFAULT_CHANNEL_NAME = "Default Channel";
+    public static final CharSequence DEFAULT_CHANNEL_NAME = "Default Channel";
     public static final String DEFAULT_CHANNEL_DESC = "Default Notification Channel";
     public static final int DEFAULT_CHANNEL_IMPORTANCE = getImportance("IMPORTANCE_LOW");
+    public static final NotificationChannelInfo DEFAULT_CHANNEL_INFO = new NotificationChannelInfo(
+            DEFAULT_CHANNEL_ID, DEFAULT_CHANNEL_NAME, DEFAULT_CHANNEL_DESC, DEFAULT_CHANNEL_IMPORTANCE
+    );
 
     public static final int NOTIFICATION_PERMISSIONS_REQUEST_CODE = 1001;
     public static final int NOTIFICATION_PENDING_INTENT_REQUEST_CODE = 1002;
