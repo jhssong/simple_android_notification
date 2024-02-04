@@ -1,8 +1,8 @@
 package com.jhssong.simple_android_notification;
 
-import static com.jhssong.simple_android_notification.SimpleNotificationListener.checkNotificationListenerPermission;
+import static com.jhssong.simple_android_notification.SimpleNotificationListener.hasNotificationListenerPermission;
 import static com.jhssong.simple_android_notification.SimpleNotificationListener.getListenedNotificationsList;
-import static com.jhssong.simple_android_notification.SimpleNotificationListener.openNotificationListenerPermissionSettingScreen;
+import static com.jhssong.simple_android_notification.SimpleNotificationListener.openNotificationListenerPermissionSetting;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -59,8 +59,8 @@ public class SimpleAndroidNotificationPlugin
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
         switch (call.method) {
-            case "getPayloadFromIntent":
-                result.success(getPayloadExtra());
+            case "getPayload":
+                result.success(getPayload());
                 break;
             case "checkNotificationChannelEnabled":
                 result.success(simpleNotification.checkNotificationChannelEnabled(Constants.DEFAULT_CHANNEL_ID));
@@ -71,42 +71,46 @@ public class SimpleAndroidNotificationPlugin
                 final String desc = call.argument("desc");
                 final int importance = Constants.getImportance(call.argument("importance"));
                 simpleNotification.createNotificationChannel(id, name, desc, importance);
+                result.success(simpleNotification.checkNotificationChannelEnabled(id));
                 break;
 
-            // TODO delete notification channel
+            // TODO Delete Notification channel
 
-            // TODO get Notification Channel List
+            // TODO Get Notification Channel List
 
-            case "checkNotificationPermission":
-                result.success(simpleNotification.checkNotificationPermission());
+            case "hasNotificationPermission":
+                result.success(simpleNotification.hasNotificationPermission());
                 break;
             case "requestNotificationPermission":
                 simpleNotification.requestNotificationPermission();
+                result.success(simpleNotification.hasNotificationPermission());
                 break;
             case "showNotification":
                 simpleNotification.showNotification(
-                        "testTitle", "testContent", "testPayload");
+                        Constants.DEFAULT_CHANNEL_ID, "testTitle",
+                        "testContent", "testPayload");
                 break;
-            case "checkNotificationListenerPermission":
-                result.success(checkNotificationListenerPermission(context));
+            case "hasNotificationListenerPermission":
+                result.success(hasNotificationListenerPermission(context));
                 break;
-            case "openNotificationListenerPermissionSettingScreen":
-                openNotificationListenerPermissionSettingScreen(context);
+            case "openNotificationListenerPermissionSetting":
+                openNotificationListenerPermissionSetting(context);
+                result.success(hasNotificationListenerPermission(context));
                 break;
             case "getListenedNotificationsList":
                 result.success(getListenedNotificationsList(context));
                 break;
 
-            // TODO Delete ListenedNotification List
-
             // TODO Update ListenedNotification List
+
+            // TODO Delete ListenedNotification List
             default:
                 result.notImplemented();
                 break;
         }
     }
 
-    private String getPayloadExtra() {
+    private String getPayload() {
         Intent activityIntent = activity.getIntent();
         String payload;
 
@@ -129,11 +133,6 @@ public class SimpleAndroidNotificationPlugin
 
         return payload;
     }
-
-
-
-
-
 
     @Override
     public void onDetachedFromActivity() {

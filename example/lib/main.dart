@@ -17,50 +17,23 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String? _payload;
   List<dynamic> _listendArray = [];
-  bool _hasNotificationPermission = false;
-  final bool _hasNotificationListenerPermission = false;
+  bool _notificationPermission = false;
+  final bool _notificationListenerPermission = false;
   final _simpleAndroidNotificationPlugin = SimpleAndroidNotification();
 
   @override
-  void initState() {
+  void initState() async {
     super.initState();
-    getPayload();
-    hasNotificationPermission();
-  }
-
-  Future<void> getPayload() async {
-    String? payload = await _simpleAndroidNotificationPlugin.getPayload();
+    var payload = await _simpleAndroidNotificationPlugin.getPayload();
     setState(() => _payload = payload);
-  }
 
-  Future<void> hasNotificationPermission() async {
-    bool hasNotificationPermission =
-        await _simpleAndroidNotificationPlugin.checkNotificationPermission() ??
-            false;
-    setState(() => _hasNotificationPermission = hasNotificationPermission);
-  }
-
-  Future<void> requestNotificationPermission() async {
-    await _simpleAndroidNotificationPlugin.requestNotificationPermission();
-  }
-
-  Future<void> show() async {
-    await _simpleAndroidNotificationPlugin.show();
-  }
-
-  Future<void> requestNotificationListenerPermission() async {
-    await _simpleAndroidNotificationPlugin
-        .openNotificationListenerPermissionSettingScreen();
-  }
-
-  Future<void> getListenedNotificationsList() async {
-    final List<dynamic> array =
-        await _simpleAndroidNotificationPlugin.getListenedNotificationsList();
-    setState(() => _listendArray = array);
+    hasNotificationPermission();
   }
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -70,38 +43,92 @@ class _MyAppState extends State<MyApp> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           children: [
             Center(child: Text('Payload: $_payload')),
-            const Center(
+            Center(
                 child: Text(
-              "if app was opened by tapping the notification",
-              style: TextStyle(fontSize: 12, color: Colors.black45),
+              "If not null, app was opened by tapping the notification",
+              style: theme.textTheme.labelSmall,
             )),
-            Center(
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                  'hasNotificationPermission : $_hasNotificationPermission'),
+                "Channel Features",
+                style: theme.textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
             ),
-            Center(
-              child: Text(
-                  'hasNotificationListenerPermission : $_hasNotificationListenerPermission'),
+            const Center(
+              child: Text('DefaultNotifcationChannelEnabled : false'),
             ),
             ElevatedButton(
-              onPressed: show,
-              child: const Text('Show notification'),
+              onPressed: () {},
+              child: const Text("Check Channel Enabled"),
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text("Create Channel"),
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text("Delete Channel"),
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text("Get Channel List"),
+            ),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Notification Features",
+                style: theme.textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Center(
+              child:
+                  Text('hasNotificationPermission : $_notificationPermission'),
             ),
             ElevatedButton(
               onPressed: hasNotificationPermission,
-              child: const Text('Check hasNotificationPermission'),
+              child: const Text('Check Notification Permission'),
             ),
             ElevatedButton(
               onPressed: requestNotificationPermission,
-              child: const Text('request notification permission'),
+              child: const Text('Request Notification Permission'),
             ),
             ElevatedButton(
-              onPressed: requestNotificationListenerPermission,
-              child: const Text('open listener permission setting screen'),
+              onPressed: showNotification,
+              child: const Text('Show Notification'),
+            ),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Notification Listener Features",
+                style: theme.textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Center(
+              child: Text(
+                  'hasNotificationListenerPermission : $_notificationListenerPermission'),
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text('Check Notification Listener Permission'),
+            ),
+            ElevatedButton(
+              onPressed: openNotificationListenerPermissionSetting,
+              child: const Text('Open Listener Permission Setting'),
             ),
             ElevatedButton(
               onPressed: getListenedNotificationsList,
-              child: const Text("get listened notifications"),
+              child: const Text("Get Listened Notifications"),
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text("Update Listened Notifications"),
             ),
             for (var i = 0; i < _listendArray.length; i++)
               Column(
@@ -119,5 +146,32 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  Future<void> hasNotificationPermission() async {
+    bool permission =
+        await _simpleAndroidNotificationPlugin.hasNotificationPermission();
+    setState(() => _notificationPermission = permission);
+  }
+
+  Future<void> requestNotificationPermission() async {
+    bool permission =
+        await _simpleAndroidNotificationPlugin.requestNotificationPermission();
+    setState(() => _notificationPermission = permission);
+  }
+
+  Future<void> showNotification() async {
+    await _simpleAndroidNotificationPlugin.showNotification();
+  }
+
+  Future<void> openNotificationListenerPermissionSetting() async {
+    await _simpleAndroidNotificationPlugin
+        .openNotificationListenerPermissionSetting();
+  }
+
+  Future<void> getListenedNotificationsList() async {
+    final List<dynamic> array =
+        await _simpleAndroidNotificationPlugin.getListenedNotificationsList();
+    setState(() => _listendArray = array);
   }
 }

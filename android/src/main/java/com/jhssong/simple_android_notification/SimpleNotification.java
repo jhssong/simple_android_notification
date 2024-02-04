@@ -46,11 +46,11 @@ public class SimpleNotification {
         }
     }
 
-    // TODO delete notification channel
+    // TODO Delete Notification Channel
 
-    // TODO get Notification Channel List
+    // TODO Get Notification Channel List
 
-    public boolean checkNotificationPermission() {
+    public boolean hasNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             int check = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS);
             return check == PackageManager.PERMISSION_GRANTED;
@@ -67,14 +67,14 @@ public class SimpleNotification {
             );
     }
 
-    public void showNotification(String title, String content, String payload) {
+    public void showNotification(String channelId, String title, String content, String payload) {  // TODO set channel ID
         Intent intent = Constants.getLaunchIntent(context);
         intent.putExtra(Constants.NOTIFICATION_PAYLOAD_KEY, payload);  // payload
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context,
                 Constants.NOTIFICATION_PENDING_INTENT_REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Constants.DEFAULT_CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -85,7 +85,7 @@ public class SimpleNotification {
         notificationManager.notify(1, builder.build());
     }
 
-    // TODO delete Notification
+    // TODO Delete Notification
 
-    // TODO get Notification List
+    // TODO Get Notification List
 }

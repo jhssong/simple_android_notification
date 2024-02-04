@@ -1,41 +1,64 @@
-import 'simple_android_notification_platform_interface.dart';
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:flutter/services.dart';
+
+const _channel = MethodChannel('jhssong/simple_android_notification');
 
 class SimpleAndroidNotification {
-  Future<String?> getPayload() {
-    return SimpleAndroidNotificationPlatform.instance.getPayload();
+  Future<String> getPayload() async {
+    return await _channel.invokeMethod('getPayload') ?? "null";
   }
 
-  Future<void> createChannel(
-    String id,
-    String name,
-    String desc,
-    int importance,
-  ) {
-    return SimpleAndroidNotificationPlatform.instance
-        .createChannel(id, name, desc, importance);
+  // TODO checkNotificationChannelEnabled (if necessary)
+
+  Future<bool> createNotificationChannel(
+      String id, String name, String desc, int importance) async {
+    return await _channel.invokeMethod('createNotificationChannel', {
+          'id': id,
+          'name': name,
+          'desc': desc,
+          'importance': importance,
+        }) ??
+        false;
   }
 
-  Future<bool?> checkNotificationPermission() {
-    return SimpleAndroidNotificationPlatform.instance
-        .checkNotificationPermission();
+  // TODO delete notification channel
+
+  // TODO get Notification Channel List
+
+  Future<bool> hasNotificationPermission() async {
+    return await _channel.invokeMethod('hasNotificationPermission') ?? false;
   }
 
-  Future<void> requestNotificationPermission() {
-    return SimpleAndroidNotificationPlatform.instance
-        .requestNotificationPermission();
+  Future<bool> requestNotificationPermission() async {
+    return await _channel.invokeMethod('requestNotificationPermission') ??
+        false;
   }
 
-  Future<void> show() {
-    return SimpleAndroidNotificationPlatform.instance.show();
+  Future<void> showNotification() async {
+    // TODO check if channel is created
+    if (!await hasNotificationPermission()) {
+      log("NotificationPermission was denied!");
+      return;
+    }
+    await _channel.invokeMethod('showNotification');
   }
 
-  Future<void> openNotificationListenerPermissionSettingScreen() {
-    return SimpleAndroidNotificationPlatform.instance
-        .openNotificationListenerPermissionSettingScreen();
+  Future<bool> hasNotificationListenerPermission() async {
+    return await _channel.invokeMethod('hasNotificationListenerPermission') ??
+        false;
   }
 
-  Future<List<dynamic>> getListenedNotificationsList() {
-    return SimpleAndroidNotificationPlatform.instance
-        .getListenedNotificationsList();
+  Future<bool> openNotificationListenerPermissionSetting() async {
+    return await _channel
+            .invokeMethod('openNotificationListenerPermissionSetting') ??
+        false;
+  }
+
+  Future<List<dynamic>> getListenedNotificationsList() async {
+    final String res =
+        await _channel.invokeMethod('getListenedNotificationsList') ?? "[]";
+    return json.decode(res);
   }
 }

@@ -18,7 +18,7 @@ import java.util.Set;
 import io.flutter.Log;
 
 public class SimpleNotificationListener extends NotificationListenerService {
-    public static boolean checkNotificationListenerPermission(Context context) {
+    public static boolean hasNotificationListenerPermission(Context context) {
         Set<String> notiListenerSet = NotificationManagerCompat.getEnabledListenerPackages(context);
 
         String myPackageName = context.getPackageName();
@@ -30,7 +30,7 @@ public class SimpleNotificationListener extends NotificationListenerService {
         return false;
     }
 
-    public static void openNotificationListenerPermissionSettingScreen(Context context) {
+    public static void openNotificationListenerPermissionSetting(Context context) {
         Intent intent = new Intent();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             intent.setAction(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
@@ -44,9 +44,9 @@ public class SimpleNotificationListener extends NotificationListenerService {
         return pref.getPref(Constants.LISTENED_NOTIFICATIONS_KEY).toString();
     }
 
-    // TODO Delete ListenedNotification List
-
     // TODO Update ListenedNotification List
+
+    // TODO Delete ListenedNotification List
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
