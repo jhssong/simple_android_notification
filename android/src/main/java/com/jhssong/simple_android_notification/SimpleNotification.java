@@ -21,6 +21,8 @@ import org.json.JSONArray;
 
 import java.util.List;
 
+import io.flutter.Log;
+
 
 public class SimpleNotification {
     private final Context context;
@@ -36,6 +38,7 @@ public class SimpleNotification {
     public boolean checkNotificationChannelEnabled(String id) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = notificationManager.getNotificationChannel(id);
+            if (channel == null) return false;
             return channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
         }
         return true;

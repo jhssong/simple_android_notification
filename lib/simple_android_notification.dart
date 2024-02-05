@@ -23,10 +23,14 @@ class SimpleAndroidNotification {
   }
 
   Future<bool> removeNotificationChannel(String id) async {
-    return await _channel.invokeMethod('removeNotificationChannel') ?? false;
+    log('removeNotificationChannel');
+    return await _channel
+            .invokeMethod('removeNotificationChannel', {'id': id}) ??
+        false;
   }
 
-  Future<List<dynamic>> getNotificationChannelList(String id) async {
+  Future<List<dynamic>> getNotificationChannelList() async {
+    log("getNotificationChannelList");
     final String res =
         await _channel.invokeMethod('getNotificationChannelList') ?? "[]";
     return json.decode(res);

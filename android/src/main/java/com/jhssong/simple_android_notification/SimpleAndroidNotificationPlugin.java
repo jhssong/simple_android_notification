@@ -60,7 +60,7 @@ public class SimpleAndroidNotificationPlugin
         final String id = call.argument("id");
         final String name = call.argument("name");
         final String desc = call.argument("desc");
-        final int importance = Constants.getImportance(call.argument("importance"));
+        final Integer importance = call.argument("importance");
 
         switch (call.method) {
             case "getPayload":
@@ -77,6 +77,7 @@ public class SimpleAndroidNotificationPlugin
             case "removeNotificationChannel":
                 simpleNotification.removeNotificationChannel(id);
                 result.success(simpleNotification.checkNotificationChannelEnabled(id));
+                break;
             case "getNotificationChannelList":
                 result.success(simpleNotification.getNotificationChannelList());
                 break;
