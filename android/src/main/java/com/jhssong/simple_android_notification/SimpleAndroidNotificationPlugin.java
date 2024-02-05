@@ -124,14 +124,14 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
                 payload = extras.getString(Constants.NOTIFICATION_PAYLOAD_KEY);
             } else {
                 payload = null;
-                Log.d(Constants.LOG_TAG, "Payload key not found iterate all extras");
-                if (extras != null) {
-                    for (String key : extras.keySet()) {
-                        Object value = extras.get(key);
-                        String valueString = value != null ? value.toString() : null;
-                        Log.d(Constants.LOG_TAG, "Key: " + key + ", Value: " + valueString);
-                    }
-                }
+                Log.d(Constants.LOG_TAG, "Payload key not found. If you want to iterate all extras, remove annotation below");
+                // if (extras != null) {
+                //     for (String key : extras.keySet()) {
+                //         Object value = extras.get(key);
+                //         String valueString = value != null ? value.toString() : null;
+                //         Log.d(Constants.LOG_TAG, "Key: " + key + ", Value: " + valueString);
+                //     }
+                // }
             }
         } else payload = null;
 

@@ -92,9 +92,10 @@ public class SimpleNotification {
             );
     }
 
-    public void showNotification(String channelId, String title, String content, String payload) {  // TODO set channel ID
+    public void showNotification(String channelId, String title, String content, String payload) {
         Intent intent = Constants.getLaunchIntent(context);
-        intent.putExtra(Constants.NOTIFICATION_PAYLOAD_KEY, payload);  // payload
+        intent.putExtra(Constants.NOTIFICATION_PAYLOAD_KEY, payload);
+        intent.setAction(payload);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context,
                 Constants.NOTIFICATION_PENDING_INTENT_REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
