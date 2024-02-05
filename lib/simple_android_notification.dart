@@ -11,7 +11,8 @@ class SimpleAndroidNotification {
   }
 
   Future<bool> checkNotificationChannelEnabled(String id) async {
-    return await _channel.invokeMethod('checkNotificationChannelEnabled') ??
+    return await _channel
+            .invokeMethod('checkNotificationChannelEnabled', {'id': id}) ??
         false;
   }
 
@@ -23,14 +24,12 @@ class SimpleAndroidNotification {
   }
 
   Future<bool> removeNotificationChannel(String id) async {
-    log('removeNotificationChannel');
     return await _channel
             .invokeMethod('removeNotificationChannel', {'id': id}) ??
         false;
   }
 
   Future<List<dynamic>> getNotificationChannelList() async {
-    log("getNotificationChannelList");
     final String res =
         await _channel.invokeMethod('getNotificationChannelList') ?? "[]";
     return json.decode(res);
@@ -45,13 +44,19 @@ class SimpleAndroidNotification {
         false;
   }
 
-  Future<void> showNotification() async {
-    // TODO check if channel is created
+  Future<bool> showNotification(
+      String id, String title, String content, String payload) async {
+    if (!await checkNotificationChannelEnabled(id)) {
+      log("NotificationChannel was unable!");
+      return false;
+    }
     if (!await hasNotificationPermission()) {
       log("NotificationPermission was denied!");
-      return;
+      return false;
     }
-    await _channel.invokeMethod('showNotification');
+    await _channel.invokeMethod('showNotification',
+        {'id': id, 'title': title, 'content': content, 'payload': payload});
+    return true;
   }
 
   Future<bool> hasNotificationListenerPermission() async {

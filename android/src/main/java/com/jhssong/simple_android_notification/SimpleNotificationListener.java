@@ -65,15 +65,15 @@ public class SimpleNotificationListener extends NotificationListenerService {
         String extraSubText = extras.getString(Notification.EXTRA_SUB_TEXT, "");
         String extraSummaryText = extras.getString(Notification.EXTRA_SUMMARY_TEXT, "");
 
-//        Log.d(Constants.LOG_TAG, "onNotificationPosted:\n" +
-//                "PackageName: " + packageName + "\n" +
-//                "Title: " + extraTitle + "\n" +
-//                "Text: " + extraText + "\n" +
-//                "BigText: " + extraBigText + "\n" +
-//                "InfoText: " + extraInfoText + "\n" +
-//                "SubText: " + extraSubText + "\n" +
-//                "SummaryText: " + extraSummaryText + "\n"
-//        );
+        Log.d(Constants.LOG_TAG, "onNotificationPosted:\n" +
+                "PackageName: " + packageName + "\n" +
+                "Title: " + extraTitle + "\n" +
+                "Text: " + extraText + "\n" +
+                "BigText: " + extraBigText + "\n" +
+                "InfoText: " + extraInfoText + "\n" +
+                "SubText: " + extraSubText + "\n" +
+                "SummaryText: " + extraSummaryText + "\n"
+        );
 
         NotificationInfo sbnData = new NotificationInfo(
                 packageName, extraTitle, extraText, extraBigText,

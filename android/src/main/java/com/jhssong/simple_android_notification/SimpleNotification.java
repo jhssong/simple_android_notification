@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -20,8 +21,6 @@ import com.jhssong.simple_android_notification.models.NotificationChannelInfo;
 import org.json.JSONArray;
 
 import java.util.List;
-
-import io.flutter.Log;
 
 
 public class SimpleNotification {

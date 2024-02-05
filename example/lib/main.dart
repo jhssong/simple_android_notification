@@ -1,3 +1,4 @@
+// ignore: unused_import
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -93,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Text('Request Notification Permission'),
           ),
           ElevatedButton(
-            onPressed: showNotification,
+            onPressed: () => showNotification(context),
             child: const Text('Show Notification'),
           ),
           const Divider(),
@@ -159,8 +160,119 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _notificationPermission = permission);
   }
 
-  Future<void> showNotification() async {
-    await simpleAndroidNotificationPlugin.showNotification();
+  void showNotification(BuildContext context) {
+    final TextEditingController idController = TextEditingController();
+    final TextEditingController titleController = TextEditingController();
+    final TextEditingController contentController = TextEditingController();
+    final TextEditingController payloadController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      maxLength: 50,
+                      controller: idController,
+                      textInputAction: TextInputAction.next,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Channel ID',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter Channel ID';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      maxLength: 30,
+                      controller: titleController,
+                      textInputAction: TextInputAction.next,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Title',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter Title';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      maxLength: 60,
+                      controller: contentController,
+                      textInputAction: TextInputAction.next,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Content',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter Content';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      maxLength: 30,
+                      controller: payloadController,
+                      textInputAction: TextInputAction.next,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Payload',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter Payload';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          bool res = await simpleAndroidNotificationPlugin
+                              .showNotification(
+                            idController.text,
+                            titleController.text,
+                            contentController.text,
+                            payloadController.text,
+                          );
+                          if (res) {
+                            Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Failed!'),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child: const Text("Send Notification"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
   }
 
   Future<void> openNotificationListenerPermissionSetting() async {
@@ -295,6 +407,7 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                     ElevatedButton(
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
+                          Navigator.pop(context);
                           bool res = await simpleAndroidNotificationPlugin
                               .createNotificationChannel(
                             idController.text,
@@ -302,7 +415,6 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                             descController.text,
                             int.parse(importanceController.text),
                           );
-                          Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(res ? 'Created!' : 'Failed!'),
@@ -356,7 +468,7 @@ class ChannelBlock extends StatelessWidget {
               Text('importance: ${item['importance']}'),
             ],
           ),
-          if (item['id'] != "Default Channel")
+          if (item['id'] != "default_channel")
             IconButton(
               onPressed: () async {
                 bool res = await simpleAndroidNotificationPlugin

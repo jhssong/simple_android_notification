@@ -10,7 +10,7 @@ public final class Constants {
     public static final String METHOD_CHANNEL = "jhssong/simple_android_notification";
     public static final String LOG_TAG = "simple_notification";
 
-    public static final String DEFAULT_CHANNEL_ID = "Default Channel";
+    public static final String DEFAULT_CHANNEL_ID = "default_channel";
     public static final CharSequence DEFAULT_CHANNEL_NAME = "Default Channel";
     public static final String DEFAULT_CHANNEL_DESC = "Default Notification Channel";
     public static final int DEFAULT_CHANNEL_IMPORTANCE = 2;

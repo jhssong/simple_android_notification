@@ -26,9 +26,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 /**
  * SimpleAndroidNotificationPlugin
  */
-public class SimpleAndroidNotificationPlugin
-        implements FlutterPlugin, MethodCallHandler, ActivityAware {
-
+public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private Context context;
     private Activity activity;
@@ -61,13 +59,17 @@ public class SimpleAndroidNotificationPlugin
         final String name = call.argument("name");
         final String desc = call.argument("desc");
         final Integer importance = call.argument("importance");
+        final String title = call.argument("title");
+        final String content = call.argument("content");
+        final String payload = call.argument("payload");
+
 
         switch (call.method) {
             case "getPayload":
                 result.success(getPayload());
                 break;
             case "checkNotificationChannelEnabled":
-                result.success(simpleNotification.checkNotificationChannelEnabled(Constants.DEFAULT_CHANNEL_ID));
+                result.success(simpleNotification.checkNotificationChannelEnabled(id));
                 break;
             case "createNotificationChannel":
                 NotificationChannelInfo info = new NotificationChannelInfo(id, name, desc, importance);
@@ -89,9 +91,8 @@ public class SimpleAndroidNotificationPlugin
                 result.success(simpleNotification.hasNotificationPermission());
                 break;
             case "showNotification":
-                simpleNotification.showNotification(
-                        Constants.DEFAULT_CHANNEL_ID, "testTitle",
-                        "testContent", "testPayload");
+                simpleNotification.showNotification(id, title, content, payload);
+                result.success(null);
                 break;
             case "hasNotificationListenerPermission":
                 result.success(hasNotificationListenerPermission(context));
