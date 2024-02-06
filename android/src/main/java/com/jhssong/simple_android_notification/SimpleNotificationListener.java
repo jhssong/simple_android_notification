@@ -9,20 +9,32 @@ import android.provider.Settings;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.jhssong.simple_android_notification.models.NotificationInfo;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.time.Instant;
 import java.util.Set;
 
 import io.flutter.Log;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class SimpleNotificationListener extends NotificationListenerService {
-    public static boolean hasNotificationListenerPermission(Context context) {
-        Set<String> notiListenerSet = NotificationManagerCompat.getEnabledListenerPackages(context);
+    private final Context context;
+    private final SharedPref sPref;
 
+    SimpleNotificationListener(Context context) {
+        this.context = context;
+        this.sPref = new SharedPref(context);
+    }
+
+    public boolean hasNotificationListenerPermission() {
+        Set<String> notiListenerSet = NotificationManagerCompat.getEnabledListenerPackages(context);
         String myPackageName = context.getPackageName();
 
         for (String packageName : notiListenerSet) {
@@ -32,60 +44,73 @@ public class SimpleNotificationListener extends NotificationListenerService {
         return false;
     }
 
-    public static void openNotificationListenerPermissionSetting(Context context) {
+    public void openNotificationListenerPermissionSetting() {
         Intent intent = new Intent();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            intent.setAction(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-        }
+        intent.setAction(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
-    public static String getListenedNotificationsList(Context context) {
-        SharedPref pref = new SharedPref(context);
-        JSONArray listenedNotificationsList = pref.getPref(Constants.LISTENED_NOTIFICATIONS_KEY);
+    public String getListenedNotificationsList() {
+        JSONArray listenedNotificationsList = sPref.getPref(Constants.LISTENED_NOTIFICATIONS_KEY);
         return listenedNotificationsList.toString();
     }
 
-    // TODO Update ListenedNotification List
+    // TODO Handle when exception
+    public void updateListenedNotificationsList(String id) {
+        JSONArray old_array = sPref.getPref(Constants.LISTENED_NOTIFICATIONS_KEY);
+        JSONArray new_array = new JSONArray();
 
-    // TODO Delete ListenedNotification List
-
-    @Override
-    public void onNotificationPosted(StatusBarNotification sbn) {
-        // TODO Find the way to show notification before onAttachedToEngine method loaded
-
-        String packageName = sbn != null ? sbn.getPackageName() : "Null";
-        Bundle extras = sbn != null ? sbn.getNotification().extras : null;
-        if (extras == null) return;
-        String extraTitle = extras.getString(Notification.EXTRA_TITLE, "");
-        String extraText = extras.getString(Notification.EXTRA_TEXT, "");
-        String extraBigText = extras.getString(Notification.EXTRA_BIG_TEXT, "");
-        String extraInfoText = extras.getString(Notification.EXTRA_INFO_TEXT, "");
-        String extraSubText = extras.getString(Notification.EXTRA_SUB_TEXT, "");
-        String extraSummaryText = extras.getString(Notification.EXTRA_SUMMARY_TEXT, "");
-
-        Log.d(Constants.LOG_TAG, "onNotificationPosted:\n" +
-                "PackageName: " + packageName + "\n" +
-                "Title: " + extraTitle + "\n" +
-                "Text: " + extraText + "\n" +
-                "BigText: " + extraBigText + "\n" +
-                "InfoText: " + extraInfoText + "\n" +
-                "SubText: " + extraSubText + "\n" +
-                "SummaryText: " + extraSummaryText + "\n"
-        );
-
-        NotificationInfo sbnData = new NotificationInfo(
-                packageName, extraTitle, extraText, extraBigText,
-                extraInfoText, extraSubText, extraSummaryText);
-
-        Context context = getApplicationContext();
-        SharedPref pref = new SharedPref(context);
-        pref.addPref(Constants.LISTENED_NOTIFICATIONS_KEY, sbnData.getAsJSON());
+        for (int i = 0; i < old_array.length(); i++) {
+            try {
+                JSONObject element = old_array.getJSONObject(i);
+                if (id.equals(element.getString("id"))) continue;
+                new_array.put(element);
+            } catch (JSONException e) {
+                Log.d(Constants.LOG_TAG, e.getMessage());
+            }
+        }
+        sPref.setPref(Constants.LISTENED_NOTIFICATIONS_KEY, new_array);
     }
 
-    @Override
-    public void onNotificationRemoved(StatusBarNotification sbn) {
-        Log.d(Constants.LOG_TAG, "onNotificationRemoved function");
+    public void resetListenedNotificationsList() {
+        sPref.setPref(Constants.LISTENED_NOTIFICATIONS_KEY, new JSONArray());
+    }
+
+    // TODO Handle when exception
+    public void setListenerFilter(String packageName) {
+        JSONObject new_item = new JSONObject();
+        try {
+            new_item.put("packageName", packageName);
+        } catch (JSONException e) {
+            Log.d(Constants.LOG_TAG, e.getMessage());
+        }
+        sPref.addPref(Constants.LISTENER_FILTER_KEY, new_item);
+    }
+
+    public String getListenerFilter() {
+        JSONArray listenerFilterList = sPref.getPref(Constants.LISTENER_FILTER_KEY);
+        return listenerFilterList.toString();
+    }
+
+    // TODO Handle when exception
+    public void updateListenerFilter(String packageName) {
+        JSONArray old_array = sPref.getPref(Constants.LISTENER_FILTER_KEY);
+        JSONArray new_array = new JSONArray();
+
+        for (int i = 0; i < old_array.length(); i++) {
+            try {
+                JSONObject element = old_array.getJSONObject(i);
+                if (packageName.equals(element.getString("packageName"))) continue;
+                new_array.put(element);
+            } catch (JSONException e) {
+                Log.d(Constants.LOG_TAG, e.getMessage());
+            }
+        }
+        sPref.setPref(Constants.LISTENER_FILTER_KEY, new_array);
+    }
+
+    public void resetListenerFilter() {
+        sPref.setPref(Constants.LISTENER_FILTER_KEY, new JSONArray());
     }
 }

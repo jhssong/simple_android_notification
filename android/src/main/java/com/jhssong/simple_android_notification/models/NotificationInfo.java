@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class NotificationInfo {
+    String id;
     String packageName;
     String extraTitle;
     String extraText;
@@ -13,8 +14,9 @@ public class NotificationInfo {
     String extraSummaryText;
 
     public NotificationInfo(
-            String packageName, String extraTitle, String extraText, String extraBigText,
+            String id, String packageName, String extraTitle, String extraText, String extraBigText,
             String extraInfoText, String extraSubText, String extraSummaryText) {
+        this.id = id;
         this.packageName = packageName;
         this.extraTitle = extraTitle;
         this.extraText = extraText;
@@ -27,6 +29,7 @@ public class NotificationInfo {
     public JSONObject getAsJSON() {
         JSONObject data = new JSONObject();
         try {
+            data.put("id", id);
             data.put("packageName", packageName);
             data.put("title", extraTitle);
             data.put("text", extraText);

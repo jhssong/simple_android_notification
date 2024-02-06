@@ -40,7 +40,7 @@
             android:value="2" />
 
         <!-- Added manually for android notification listener -->
-        <service android:name="com.jhssong.simple_android_notification.SimpleNotificationListener"
+        <service android:name="com.jhssong.simple_android_notification.SimpleNotificationListenerService"
             android:label="Notifications Listener"
             android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
