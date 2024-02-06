@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:simple_android_notification/simple_android_notification.dart';
-import 'package:simple_android_notification_example/info_box.dart';
+import 'package:simple_android_notification_example/widgets/info_box.dart';
 
 class ListenerScreen extends StatefulWidget {
   final SimpleAndroidNotification simpleAndroidNotificationPlugin;

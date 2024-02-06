@@ -7,26 +7,26 @@ const _channel = MethodChannel('jhssong/simple_android_notification');
 class SimpleAndroidNotification {
   Future<String> getPayload() async {
     final String? res = await _channel.invokeMethod('getPayload');
-    return res ?? "null";
+    return res ?? "error";
   }
 
-  Future<bool> checkNotificationChannelEnabled(String id) async {
-    final bool? res = await _channel
+  Future<String> checkNotificationChannelEnabled(String id) async {
+    final String? res = await _channel
         .invokeMethod('checkNotificationChannelEnabled', {'id': id});
-    return res ?? false;
+    return res ?? "error";
   }
 
-  Future<bool> createNotificationChannel(
+  Future<String> createNotificationChannel(
       String id, String name, String desc, int importance) async {
-    final bool? res = await _channel.invokeMethod('createNotificationChannel',
+    final String? res = await _channel.invokeMethod('createNotificationChannel',
         {'id': id, 'name': name, 'desc': desc, 'importance': importance});
-    return res ?? false;
+    return res ?? "error";
   }
 
-  Future<bool> removeNotificationChannel(String id) async {
-    final bool? res =
+  Future<String> removeNotificationChannel(String id) async {
+    final String? res =
         await _channel.invokeMethod('removeNotificationChannel', {'id': id});
-    return res ?? false;
+    return res ?? "error";
   }
 
   Future<List<dynamic>> getNotificationChannelList() async {

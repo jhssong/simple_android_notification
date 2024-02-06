@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:simple_android_notification/simple_android_notification.dart';
-import 'package:simple_android_notification_example/info_box.dart';
+import 'package:simple_android_notification_example/widgets/info_box.dart';
+import 'package:simple_android_notification_example/widgets/input_box.dart';
 
 class ChannelScreen extends StatefulWidget {
   final SimpleAndroidNotification simpleAndroidNotificationPlugin;
@@ -15,6 +16,7 @@ class ChannelScreen extends StatefulWidget {
 
 class _ChannelScreenState extends State<ChannelScreen> {
   List<dynamic> list = [];
+
   @override
   void initState() {
     super.initState();
@@ -68,12 +70,6 @@ class _ChannelScreenState extends State<ChannelScreen> {
     );
   }
 
-  Future<void> getNotificationChannelList() async {
-    final List<dynamic> res = await widget.simpleAndroidNotificationPlugin
-        .getNotificationChannelList();
-    setState(() => list = res);
-  }
-
   void showCreateChannelDialog(BuildContext context) {
     final TextEditingController idController = TextEditingController();
     final TextEditingController nameController = TextEditingController();
@@ -81,117 +77,85 @@ class _ChannelScreenState extends State<ChannelScreen> {
     final TextEditingController importanceController = TextEditingController();
     final formKey = GlobalKey<FormState>();
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      maxLength: 50,
-                      controller: idController,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'ID',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter ID';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      maxLength: 30,
-                      controller: nameController,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Name',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter Name';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      maxLength: 300,
-                      controller: descController,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Description',
-                      ),
-                    ),
-                    TextFormField(
-                      maxLength: 1,
-                      controller: importanceController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Importance(0~4)',
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp('[01234]')),
-                      ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter Importance Level';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (formKey.currentState!.validate()) {
-                          Navigator.pop(context);
-                          bool res = await widget
-                              .simpleAndroidNotificationPlugin
-                              .createNotificationChannel(
-                            idController.text,
-                            nameController.text,
-                            descController.text,
-                            int.parse(importanceController.text),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(res ? 'Created!' : 'Failed!'),
-                              duration: const Duration(seconds: 1),
-                            ),
-                          );
-                          await getNotificationChannelList();
-                        }
-                      },
-                      child: const Text("Create Channel"),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Cancel"),
-                    ),
-                  ],
-                ),
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Form(
+              key: formKey,
+              child: Column(
+                children: [
+                  InputBox(
+                      maxLength: 50, controller: idController, label: "ID"),
+                  InputBox(
+                      maxLength: 30, controller: nameController, label: "Name"),
+                  InputBox(
+                    maxLength: 300,
+                    controller: descController,
+                    label: "Description",
+                  ),
+                  InputBox(
+                    maxLength: 1,
+                    controller: importanceController,
+                    action: TextInputAction.next,
+                    label: "Importance(0~4)",
+                    validatorLabel: "importance level",
+                    inputFormatter: [
+                      FilteringTextInputFormatter.allow(RegExp('[01234]'))
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        handleCreateChannel(
+                          idController.text,
+                          nameController.text,
+                          descController.text,
+                          int.parse(importanceController.text),
+                        );
+                      }
+                    },
+                    child: const Text("Create Channel"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel"),
+                  ),
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> getNotificationChannelList() async {
+    final List<dynamic> res = await widget.simpleAndroidNotificationPlugin
+        .getNotificationChannelList();
+    setState(() => list = res);
   }
 
   Future<void> handleDeleteChannel(BuildContext context, String id) async {
-    bool res = await widget.simpleAndroidNotificationPlugin
+    var sm = ScaffoldMessenger.of(context);
+    String res = await widget.simpleAndroidNotificationPlugin
         .removeNotificationChannel(id);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(res ? 'Failed!' : 'Deleted!'),
-      duration: const Duration(seconds: 1),
-    ));
+    sm.showSnackBar(
+        SnackBar(content: Text(res), duration: const Duration(seconds: 2)));
+    await getNotificationChannelList();
+  }
+
+  Future<void> handleCreateChannel(
+      String id, String name, String desc, int importance) async {
+    Navigator.pop(context);
+    var sm = ScaffoldMessenger.of(context);
+    String res = await widget.simpleAndroidNotificationPlugin
+        .createNotificationChannel(id, name, desc, importance);
+    sm.showSnackBar(
+      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+    );
     await getNotificationChannelList();
   }
 }

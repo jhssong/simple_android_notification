@@ -34,28 +34,34 @@ public class SimpleNotification {
         this.notificationManager = notificationManager;
     }
 
-    public boolean checkNotificationChannelEnabled(String id) {
+    public String checkNotificationChannelEnabled(String id) {
         NotificationChannel channel = notificationManager.getNotificationChannel(id);
-        if (channel == null) return false;
-        return channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+        if (channel == null) return "false";
+        return channel.getImportance() != NotificationManager.IMPORTANCE_NONE ? "true" : "false";
     }
 
-    // TODO Handle exception for channel enabled
-    // TODO Check if the channel is already been made
-    public void createNotificationChannel(NotificationChannelInfo info) {
+    public String createNotificationChannel(NotificationChannelInfo info) {
+        if (checkNotificationChannelEnabled(info.id).equals("true"))
+            return "Channel already exists";
+
         NotificationChannel channel = new NotificationChannel(info.id, info.name, info.importance);
         channel.setDescription(info.description);
         notificationManager.createNotificationChannel(channel);
+
+        String res = checkNotificationChannelEnabled(info.id);
+        return res.equals("true") ? "created" : "failed";
     }
 
-    public void removeNotificationChannel(String id) {
+    public String removeNotificationChannel(String id) {
         notificationManager.deleteNotificationChannel(id);
+        String res = checkNotificationChannelEnabled(id);
+        return res.equals("false") ? "deleted" : "failed";
     }
 
     public String getNotificationChannelList() {
         JSONArray channelArray = new JSONArray();
-
         List<NotificationChannel> channels = notificationManager.getNotificationChannels();
+
         for (NotificationChannel channel : channels) {
             String id = channel.getId();
             CharSequence name = channel.getName();
