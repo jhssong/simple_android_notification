@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:simple_android_notification/simple_android_notification.dart';
 import 'package:simple_android_notification_example/channel_screen.dart';
 import 'package:simple_android_notification_example/listener_screen.dart';
+import 'package:simple_android_notification_example/widgets/input_box.dart';
 
 final simpleAndroidNotificationPlugin = SimpleAndroidNotification();
 
@@ -98,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Text('Request Notification Permission'),
           ),
           ElevatedButton(
-            onPressed: () => showNotification(context),
+            onPressed: () => showNotificationDialog(context),
             child: const Text('Show Notification'),
           ),
           const Divider(),
@@ -133,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         )),
               );
             },
-            child: const Text("Open Listend Notification List Screen"),
+            child: const Text("Open Listener Screen"),
           ),
         ],
       ),
@@ -152,124 +153,71 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> requestNotificationPermission() async {
-    bool permission =
-        await simpleAndroidNotificationPlugin.requestNotificationPermission();
-    setState(() => _notificationPermission = permission);
+    await simpleAndroidNotificationPlugin.requestNotificationPermission();
   }
 
-  void showNotification(BuildContext context) {
+  void showNotificationDialog(BuildContext context) {
     final TextEditingController idController = TextEditingController();
     final TextEditingController titleController = TextEditingController();
     final TextEditingController contentController = TextEditingController();
     final TextEditingController payloadController = TextEditingController();
     final formKey = GlobalKey<FormState>();
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Form(
-                key: formKey,
-                child: ListView(
-                  children: [
-                    TextFormField(
-                      maxLength: 50,
-                      controller: idController,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Channel ID',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter Channel ID';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      maxLength: 30,
-                      controller: titleController,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Title',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter Title';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      maxLength: 60,
-                      controller: contentController,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Content',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter Content';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      maxLength: 30,
-                      controller: payloadController,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Payload',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter Payload';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (formKey.currentState!.validate()) {
-                          bool res = await simpleAndroidNotificationPlugin
-                              .showNotification(
-                            idController.text,
-                            titleController.text,
-                            contentController.text,
-                            payloadController.text,
-                          );
-                          if (res) {
-                            Navigator.pop(context);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Failed!'),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      child: const Text("Send Notification"),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Cancel"),
-                    ),
-                  ],
-                ),
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Form(
+              key: formKey,
+              child: ListView(
+                children: [
+                  InputBox(
+                    maxLength: 50,
+                    controller: idController,
+                    label: "Channel ID",
+                  ),
+                  InputBox(
+                    maxLength: 30,
+                    controller: titleController,
+                    label: "Title",
+                  ),
+                  InputBox(
+                    maxLength: 60,
+                    controller: contentController,
+                    label: "Content",
+                  ),
+                  InputBox(
+                    maxLength: 30,
+                    controller: payloadController,
+                    label: "Payload",
+                    activeValidator: false,
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (formKey.currentState!.validate()) {
+                        handleShowNotification(
+                          idController.text,
+                          titleController.text,
+                          contentController.text,
+                          payloadController.text,
+                        );
+                      }
+                    },
+                    child: const Text("Send Notification"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel"),
+                  ),
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   Future<void> hasNotificationListenerPermission() async {
@@ -282,5 +230,19 @@ class _HomeScreenState extends State<HomeScreen> {
     bool permission = await simpleAndroidNotificationPlugin
         .openNotificationListenerPermissionSetting();
     setState(() => _notificationListenerPermission = permission);
+  }
+
+  Future<void> handleShowNotification(
+      String id, String title, String content, String payload) async {
+    var navigator = Navigator.of(context);
+    var sm = ScaffoldMessenger.of(context);
+    String res = await simpleAndroidNotificationPlugin.showNotification(
+        id, title, content, payload);
+    if (res == "Send") {
+      navigator.pop();
+    }
+    sm.showSnackBar(
+      SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
+    );
   }
 }

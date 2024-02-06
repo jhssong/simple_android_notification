@@ -30,7 +30,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
         title: const Text("Channels List"),
         actions: [
           IconButton(
-            onPressed: () => showCreateChannelDialog(context),
+            onPressed: () => createChannelDialog(context),
             icon: const Icon(Icons.add),
           )
         ],
@@ -70,7 +70,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
     );
   }
 
-  void showCreateChannelDialog(BuildContext context) {
+  void createChannelDialog(BuildContext context) {
     final TextEditingController idController = TextEditingController();
     final TextEditingController nameController = TextEditingController();
     final TextEditingController descController = TextEditingController();

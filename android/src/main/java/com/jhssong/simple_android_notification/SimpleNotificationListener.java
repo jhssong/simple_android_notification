@@ -67,7 +67,7 @@ public class SimpleNotificationListener extends NotificationListenerService {
                 if (id.equals(element.getString("id"))) continue;
                 new_array.put(element);
             } catch (JSONException e) {
-                Log.d(Constants.LOG_TAG, e.getMessage());
+                Log.e(Constants.LOG_TAG, e.getMessage());
             }
         }
         sPref.setPref(Constants.LISTENED_NOTIFICATIONS_KEY, new_array);
@@ -83,7 +83,7 @@ public class SimpleNotificationListener extends NotificationListenerService {
         try {
             new_item.put("packageName", packageName);
         } catch (JSONException e) {
-            Log.d(Constants.LOG_TAG, e.getMessage());
+            Log.e(Constants.LOG_TAG, e.getMessage());
         }
         sPref.addPref(Constants.LISTENER_FILTER_KEY, new_item);
     }
@@ -104,7 +104,7 @@ public class SimpleNotificationListener extends NotificationListenerService {
                 if (packageName.equals(element.getString("packageName"))) continue;
                 new_array.put(element);
             } catch (JSONException e) {
-                Log.d(Constants.LOG_TAG, e.getMessage());
+                Log.e(Constants.LOG_TAG, e.getMessage());
             }
         }
         sPref.setPref(Constants.LISTENER_FILTER_KEY, new_array);

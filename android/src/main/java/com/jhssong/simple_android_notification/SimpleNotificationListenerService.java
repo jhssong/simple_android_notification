@@ -42,11 +42,11 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
                     if (packageName.equals(element.getString("packageName")))
                         isFiltered = true;
                 } catch (JSONException e) {
-                    Log.d(Constants.LOG_TAG, e.getMessage());
+                    Log.e(Constants.LOG_TAG, e.getMessage());
                 }
             }
         } catch (JSONException e) {
-            Log.d(Constants.LOG_TAG, e.getMessage());
+            Log.e(Constants.LOG_TAG, e.getMessage());
         }
 
         if (!isFiltered) {

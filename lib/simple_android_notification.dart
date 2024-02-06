@@ -1,19 +1,15 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/services.dart';
 
 const _channel = MethodChannel('jhssong/simple_android_notification');
 
 class SimpleAndroidNotification {
-  Future<String> getPayload() async {
-    final String? res = await _channel.invokeMethod('getPayload');
-    return res ?? "error";
-  }
-
-  Future<String> checkNotificationChannelEnabled(String id) async {
-    final String? res = await _channel
+  Future<bool> checkNotificationChannelEnabled(String id) async {
+    final bool? res = await _channel
         .invokeMethod('checkNotificationChannelEnabled', {'id': id});
-    return res ?? "error";
+    return res ?? false;
   }
 
   Future<String> createNotificationChannel(
@@ -35,22 +31,25 @@ class SimpleAndroidNotification {
     return json.decode(res ?? '[]');
   }
 
+  Future<String> getPayload() async {
+    final String? res = await _channel.invokeMethod('getPayload');
+    return res ?? "error";
+  }
+
   Future<bool> hasNotificationPermission() async {
     final bool? res = await _channel.invokeMethod('hasNotificationPermission');
     return res ?? false;
   }
 
-  Future<bool> requestNotificationPermission() async {
-    final bool? res =
-        await _channel.invokeMethod('requestNotificationPermission');
-    return res ?? false;
+  Future<void> requestNotificationPermission() async {
+    await _channel.invokeMethod('requestNotificationPermission');
   }
 
-  Future<bool> showNotification(
+  Future<String> showNotification(
       String id, String title, String content, String payload) async {
-    await _channel.invokeMethod('showNotification',
+    final String? res = await _channel.invokeMethod('showNotification',
         {'id': id, 'title': title, 'content': content, 'payload': payload});
-    return true;
+    return res ?? 'error';
   }
 
   Future<bool> hasNotificationListenerPermission() async {

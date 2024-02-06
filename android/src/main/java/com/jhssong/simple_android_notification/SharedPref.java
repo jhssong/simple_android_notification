@@ -24,7 +24,7 @@ public class SharedPref {
             try {
                 return new JSONArray(data);
             } catch (JSONException e) {
-                Log.d(Constants.LOG_TAG, e.getMessage());
+                Log.e(Constants.LOG_TAG, e.getMessage());
             }
         }
         return new JSONArray();

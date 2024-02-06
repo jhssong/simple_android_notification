@@ -3,16 +3,13 @@ package com.jhssong.simple_android_notification;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.jhssong.simple_android_notification.models.NotificationChannelInfo;
 
-import io.flutter.Log;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -24,7 +21,6 @@ import io.flutter.plugin.common.MethodChannel.Result;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
     private Context context;
-    private Activity activity;
     private MethodChannel channel;
     private NotificationManager notificationManager;
     private SimpleNotification simpleNotification;
@@ -40,7 +36,7 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
 
     @Override
     public void onAttachedToActivity(ActivityPluginBinding binding) {
-        this.activity = binding.getActivity();
+        Activity activity = binding.getActivity();
         this.simpleNotification = new SimpleNotification(context, activity, notificationManager);
         this.simpleNotificationListener = new SimpleNotificationListener(context);
         // Set Default Notification Channel
@@ -60,9 +56,6 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
 
         // TODO When you handle the exception return what was that
         switch (call.method) {
-            case "getPayload":
-                result.success(getPayload());
-                break;
             case "checkNotificationChannelEnabled":
                 result.success(simpleNotification.checkNotificationChannelEnabled(id));
                 break;
@@ -76,16 +69,18 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
             case "getNotificationChannelList":
                 result.success(simpleNotification.getNotificationChannelList());
                 break;
+            case "getPayload":
+                result.success(simpleNotification.getPayload());
+                break;
             case "hasNotificationPermission":
                 result.success(simpleNotification.hasNotificationPermission());
                 break;
             case "requestNotificationPermission":
                 simpleNotification.requestNotificationPermission();
-                result.success(simpleNotification.hasNotificationPermission());
+                result.success(null);
                 break;
             case "showNotification":
-                simpleNotification.showNotification(id, title, content, payload);
-                result.success(null);
+                result.success(simpleNotification.showNotification(id, title, content, payload));
                 break;
             case "hasNotificationListenerPermission":
                 result.success(simpleNotificationListener.hasNotificationListenerPermission());
@@ -126,39 +121,17 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
         }
     }
 
-    private String getPayload() {
-        Intent activityIntent = activity.getIntent();
-        String payload;
-
-        if (activityIntent != null) {
-            Bundle extras = activityIntent.getExtras();
-            if (extras != null && extras.containsKey(Constants.NOTIFICATION_PAYLOAD_KEY)) {
-                payload = extras.getString(Constants.NOTIFICATION_PAYLOAD_KEY);
-            } else {
-                payload = null;
-                Log.d(Constants.LOG_TAG, "Payload key not found. " +
-                        "If you want to iterate all extras, remove annotation below");
-                // if (extras != null) {
-                //     for (String key : extras.keySet()) {
-                //         Object value = extras.get(key);
-                //         String valueString = value != null ? value.toString() : null;
-                //         Log.d(Constants.LOG_TAG, "Key: " + key + ", Value: " + valueString);
-                //     }
-                // }
-            }
-        } else payload = null;
-
-        return payload;
+    @Override
+    public void onDetachedFromActivity() {
     }
 
     @Override
-    public void onDetachedFromActivity() {}
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+    }
 
     @Override
-    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {}
-
-    @Override
-    public void onDetachedFromActivityForConfigChanges() {}
+    public void onDetachedFromActivityForConfigChanges() {
+    }
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {

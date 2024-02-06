@@ -6,6 +6,7 @@ class InputBox extends StatelessWidget {
   final TextEditingController controller;
   final TextInputAction? action;
   final String label;
+  final bool? activeValidator;
   final String? validatorLabel;
   final List<TextInputFormatter>? inputFormatter;
 
@@ -15,6 +16,7 @@ class InputBox extends StatelessWidget {
     required this.controller,
     this.action,
     required this.label,
+    this.activeValidator,
     this.validatorLabel,
     this.inputFormatter,
   });
@@ -30,7 +32,7 @@ class InputBox extends StatelessWidget {
         labelText: label,
       ),
       validator: (value) {
-        if (value == null || value.isEmpty) {
+        if ((value == null || value.isEmpty) && (activeValidator ?? true)) {
           return 'Please enter ${validatorLabel ?? label.toLowerCase()}';
         }
         return null;
