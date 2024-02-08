@@ -17,7 +17,7 @@ class _ListenerScreenState extends State<ListenerScreen> {
   @override
   void initState() {
     super.initState();
-    getListenedNotificationsList();
+    getListenedNotifications();
   }
 
   @override
@@ -40,7 +40,7 @@ class _ListenerScreenState extends State<ListenerScreen> {
             icon: const Icon(Icons.filter_alt_outlined),
           ),
           IconButton(
-            onPressed: resetListenedNotificationsList,
+            onPressed: resetListenedNotifications,
             icon: const Icon(Icons.delete_outline),
           ),
         ],
@@ -70,8 +70,7 @@ class _ListenerScreenState extends State<ListenerScreen> {
                     ],
                   ),
                   IconButton(
-                    onPressed: () =>
-                        updateListenedNotificationsList(list[i]['id']),
+                    onPressed: () => removeListenedNotifications(list[i]['id']),
                     icon: const Icon(Icons.delete),
                   ),
                 ],
@@ -82,22 +81,30 @@ class _ListenerScreenState extends State<ListenerScreen> {
     );
   }
 
-  Future<void> getListenedNotificationsList() async {
-    final List<dynamic> res = await widget.simpleAndroidNotificationPlugin
-        .getListenedNotificationsList();
+  Future<void> getListenedNotifications() async {
+    final List<dynamic> res =
+        await widget.simpleAndroidNotificationPlugin.getListenedNotifications();
     setState(() => list = res);
   }
 
-  Future<void> resetListenedNotificationsList() async {
-    final List<dynamic> res = await widget.simpleAndroidNotificationPlugin
-        .resetListenedNotificationsList();
-    setState(() => list = res);
+  Future<void> removeListenedNotifications(String id) async {
+    final sm = ScaffoldMessenger.of(context);
+    final res = await widget.simpleAndroidNotificationPlugin
+        .removeListenedNotifications(id);
+    sm.showSnackBar(
+      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+    );
+    await getListenedNotifications();
   }
 
-  Future<void> updateListenedNotificationsList(String id) async {
-    final List<dynamic> res = await widget.simpleAndroidNotificationPlugin
-        .updateListenedNotificationsList(id);
-    setState(() => list = res);
+  Future<void> resetListenedNotifications() async {
+    final sm = ScaffoldMessenger.of(context);
+    final res = await widget.simpleAndroidNotificationPlugin
+        .resetListenedNotifications();
+    sm.showSnackBar(
+      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+    );
+    await getListenedNotifications();
   }
 }
 
@@ -125,8 +132,12 @@ class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
         title: const Text("Listener Filter List"),
         actions: [
           IconButton(
-            onPressed: () => showCreateChannelDialog(context),
+            onPressed: () => showAddListenerFilterDialog(context),
             icon: const Icon(Icons.add),
+          ),
+          IconButton(
+            onPressed: resetListenerFilter,
+            icon: const Icon(Icons.delete_outline),
           ),
         ],
       ),
@@ -148,7 +159,7 @@ class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
                   ),
                   IconButton(
                     onPressed: () =>
-                        updateListenerFilter(list[i]['packageName']),
+                        removeListenerFilter(list[i]['packageName']),
                     icon: const Icon(Icons.delete),
                   ),
                 ],
@@ -159,31 +170,7 @@ class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
     );
   }
 
-  Future<void> setListenerFilter(String packageName) async {
-    final List<dynamic> res = await widget.simpleAndroidNotificationPlugin
-        .setListenerFilter(packageName);
-    setState(() => list = res);
-  }
-
-  Future<void> getListenerFilter() async {
-    final List<dynamic> res =
-        await widget.simpleAndroidNotificationPlugin.getListenerFilter();
-    setState(() => list = res);
-  }
-
-  Future<void> updateListenerFilter(String packageName) async {
-    final List<dynamic> res = await widget.simpleAndroidNotificationPlugin
-        .updateListenerFilter(packageName);
-    setState(() => list = res);
-  }
-
-  Future<void> resetListenerFilter() async {
-    final List<dynamic> res =
-        await widget.simpleAndroidNotificationPlugin.resetListenerFilter();
-    setState(() => list = res);
-  }
-
-  void showCreateChannelDialog(BuildContext context) {
+  void showAddListenerFilterDialog(BuildContext context) {
     final TextEditingController nameController = TextEditingController();
     final formKey = GlobalKey<FormState>();
     showDialog(
@@ -217,7 +204,7 @@ class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
                         if (formKey.currentState!.validate()) {
                           Navigator.pop(context);
                           await widget.simpleAndroidNotificationPlugin
-                              .setListenerFilter(
+                              .addListenerFilter(
                             nameController.text,
                           );
                           await getListenerFilter();
@@ -237,5 +224,41 @@ class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
             ),
           );
         });
+  }
+
+  Future<void> addListenerFilter(String packageName) async {
+    final sm = ScaffoldMessenger.of(context);
+    final res = await widget.simpleAndroidNotificationPlugin
+        .addListenerFilter(packageName);
+    sm.showSnackBar(
+      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+    );
+    await getListenerFilter();
+  }
+
+  Future<void> getListenerFilter() async {
+    final List<dynamic> res =
+        await widget.simpleAndroidNotificationPlugin.getListenerFilter();
+    setState(() => list = res);
+  }
+
+  Future<void> removeListenerFilter(String packageName) async {
+    final sm = ScaffoldMessenger.of(context);
+    final res = await widget.simpleAndroidNotificationPlugin
+        .removeListenerFilter(packageName);
+    sm.showSnackBar(
+      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+    );
+    await getListenerFilter();
+  }
+
+  Future<void> resetListenerFilter() async {
+    final sm = ScaffoldMessenger.of(context);
+    final res =
+        await widget.simpleAndroidNotificationPlugin.resetListenerFilter();
+    sm.showSnackBar(
+      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+    );
+    await getListenerFilter();
   }
 }

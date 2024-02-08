@@ -59,7 +59,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                   if (list[i]['id'] != "default_channel")
                     IconButton(
                       onPressed: () =>
-                          handleDeleteChannel(context, list[i]['id']),
+                          removeNotificationChannel(context, list[i]['id']),
                       icon: const Icon(Icons.delete),
                     ),
                 ],
@@ -109,7 +109,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                   ElevatedButton(
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
-                        handleCreateChannel(
+                        createNotificationChannel(
                           idController.text,
                           nameController.text,
                           descController.text,
@@ -132,30 +132,31 @@ class _ChannelScreenState extends State<ChannelScreen> {
     );
   }
 
+  Future<void> createNotificationChannel(
+      String id, String name, String desc, int importance) async {
+    Navigator.pop(context);
+    final sm = ScaffoldMessenger.of(context);
+    final res = await widget.simpleAndroidNotificationPlugin
+        .createNotificationChannel(id, name, desc, importance);
+    sm.showSnackBar(
+      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+    );
+    await getNotificationChannelList();
+  }
+
   Future<void> getNotificationChannelList() async {
     final List<dynamic> res = await widget.simpleAndroidNotificationPlugin
         .getNotificationChannelList();
     setState(() => list = res);
   }
 
-  Future<void> handleDeleteChannel(BuildContext context, String id) async {
-    var sm = ScaffoldMessenger.of(context);
-    String res = await widget.simpleAndroidNotificationPlugin
+  Future<void> removeNotificationChannel(
+      BuildContext context, String id) async {
+    final sm = ScaffoldMessenger.of(context);
+    final res = await widget.simpleAndroidNotificationPlugin
         .removeNotificationChannel(id);
     sm.showSnackBar(
         SnackBar(content: Text(res), duration: const Duration(seconds: 2)));
-    await getNotificationChannelList();
-  }
-
-  Future<void> handleCreateChannel(
-      String id, String name, String desc, int importance) async {
-    Navigator.pop(context);
-    var sm = ScaffoldMessenger.of(context);
-    String res = await widget.simpleAndroidNotificationPlugin
-        .createNotificationChannel(id, name, desc, importance);
-    sm.showSnackBar(
-      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
-    );
     await getNotificationChannelList();
   }
 }

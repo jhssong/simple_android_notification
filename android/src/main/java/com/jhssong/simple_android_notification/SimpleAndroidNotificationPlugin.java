@@ -54,7 +54,6 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
         final String content = call.argument("content");
         final String payload = call.argument("payload");
 
-        // TODO When you handle the exception return what was that
         switch (call.method) {
             case "checkNotificationChannelEnabled":
                 result.success(simpleNotification.checkNotificationChannelEnabled(id));
@@ -63,11 +62,11 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
                 NotificationChannelInfo info = new NotificationChannelInfo(id, name, desc, importance);
                 result.success(simpleNotification.createNotificationChannel(info));
                 break;
-            case "removeNotificationChannel":
-                result.success(simpleNotification.removeNotificationChannel(id));
-                break;
             case "getNotificationChannelList":
                 result.success(simpleNotification.getNotificationChannelList());
+                break;
+            case "removeNotificationChannel":
+                result.success(simpleNotification.removeNotificationChannel(id));
                 break;
             case "getPayload":
                 result.success(simpleNotification.getPayload());
@@ -82,38 +81,33 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
             case "showNotification":
                 result.success(simpleNotification.showNotification(id, title, content, payload));
                 break;
-            case "hasNotificationListenerPermission":
-                result.success(simpleNotificationListener.hasNotificationListenerPermission());
+            case "hasListenerPermission":
+                result.success(simpleNotificationListener.hasListenerPermission());
                 break;
-            case "openNotificationListenerPermissionSetting":
-                simpleNotificationListener.openNotificationListenerPermissionSetting();
-                result.success(simpleNotificationListener.hasNotificationListenerPermission());
+            case "openListenerPermissionSetting":
+                simpleNotificationListener.openListenerPermissionSetting();
+                result.success(null);
                 break;
-            case "getListenedNotificationsList":
-                result.success(simpleNotificationListener.getListenedNotificationsList());
+            case "getListenedNotifications":
+                result.success(simpleNotificationListener.getListenedNotifications());
                 break;
-            case "updateListenedNotificationsList":
-                simpleNotificationListener.updateListenedNotificationsList(id);
-                result.success(simpleNotificationListener.getListenedNotificationsList());
+            case "removeListenedNotifications":
+                result.success(simpleNotificationListener.removeListenedNotifications(id));
                 break;
-            case "resetListenedNotificationsList":
-                simpleNotificationListener.resetListenedNotificationsList();
-                result.success(simpleNotificationListener.getListenedNotificationsList());
+            case "resetListenedNotifications":
+                result.success(simpleNotificationListener.resetListenedNotifications());
                 break;
-            case "setListenerFilter":
-                simpleNotificationListener.setListenerFilter(packageName);
-                result.success(simpleNotificationListener.getListenerFilter());
+            case "addListenerFilter":
+                result.success(simpleNotificationListener.addListenerFilter(packageName));
                 break;
             case "getListenerFilter":
                 result.success(simpleNotificationListener.getListenerFilter());
                 break;
-            case "updateListenerFilter":
-                simpleNotificationListener.updateListenerFilter(packageName);
-                result.success(simpleNotificationListener.getListenerFilter());
+            case "removeListenerFilter":
+                result.success(simpleNotificationListener.removeListenerFilter(packageName));
                 break;
             case "resetListenerFilter":
-                simpleNotificationListener.resetListenerFilter();
-                result.success(simpleNotificationListener.getListenerFilter());
+                result.success(simpleNotificationListener.resetListenerFilter());
                 break;
             default:
                 result.notImplemented();

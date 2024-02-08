@@ -1,24 +1,18 @@
 package com.jhssong.simple_android_notification;
 
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.service.notification.NotificationListenerService;
-import android.service.notification.StatusBarNotification;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
-
-import com.jhssong.simple_android_notification.models.NotificationInfo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.Instant;
 import java.util.Set;
 
 import io.flutter.Log;
@@ -33,7 +27,7 @@ public class SimpleNotificationListener extends NotificationListenerService {
         this.sPref = new SharedPref(context);
     }
 
-    public boolean hasNotificationListenerPermission() {
+    public boolean hasListenerPermission() {
         Set<String> notiListenerSet = NotificationManagerCompat.getEnabledListenerPackages(context);
         String myPackageName = context.getPackageName();
 
@@ -44,20 +38,19 @@ public class SimpleNotificationListener extends NotificationListenerService {
         return false;
     }
 
-    public void openNotificationListenerPermissionSetting() {
+    public void openListenerPermissionSetting() {
         Intent intent = new Intent();
         intent.setAction(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
-    public String getListenedNotificationsList() {
+    public String getListenedNotifications() {
         JSONArray listenedNotificationsList = sPref.getPref(Constants.LISTENED_NOTIFICATIONS_KEY);
         return listenedNotificationsList.toString();
     }
 
-    // TODO Handle when exception
-    public void updateListenedNotificationsList(String id) {
+    public String removeListenedNotifications(String id) {
         JSONArray old_array = sPref.getPref(Constants.LISTENED_NOTIFICATIONS_KEY);
         JSONArray new_array = new JSONArray();
 
@@ -68,24 +61,28 @@ public class SimpleNotificationListener extends NotificationListenerService {
                 new_array.put(element);
             } catch (JSONException e) {
                 Log.e(Constants.LOG_TAG, e.getMessage());
+                return "Failed";
             }
         }
-        sPref.setPref(Constants.LISTENED_NOTIFICATIONS_KEY, new_array);
+        final String res = sPref.setPref(Constants.LISTENED_NOTIFICATIONS_KEY, new_array);
+        return res.equals("Success") ? "Removed" : res;
     }
 
-    public void resetListenedNotificationsList() {
-        sPref.setPref(Constants.LISTENED_NOTIFICATIONS_KEY, new JSONArray());
+    public String resetListenedNotifications() {
+        final String res = sPref.setPref(Constants.LISTENED_NOTIFICATIONS_KEY, new JSONArray());
+        return res.equals("Success") ? "Reset" : res;
     }
 
-    // TODO Handle when exception
-    public void setListenerFilter(String packageName) {
+    public String addListenerFilter(String packageName) {
         JSONObject new_item = new JSONObject();
         try {
             new_item.put("packageName", packageName);
         } catch (JSONException e) {
             Log.e(Constants.LOG_TAG, e.getMessage());
+            return "Failed";
         }
-        sPref.addPref(Constants.LISTENER_FILTER_KEY, new_item);
+        final String res = sPref.addPref(Constants.LISTENER_FILTER_KEY, new_item);
+        return res.equals("Success") ? "Added" : res;
     }
 
     public String getListenerFilter() {
@@ -93,8 +90,7 @@ public class SimpleNotificationListener extends NotificationListenerService {
         return listenerFilterList.toString();
     }
 
-    // TODO Handle when exception
-    public void updateListenerFilter(String packageName) {
+    public String removeListenerFilter(String packageName) {
         JSONArray old_array = sPref.getPref(Constants.LISTENER_FILTER_KEY);
         JSONArray new_array = new JSONArray();
 
@@ -105,12 +101,15 @@ public class SimpleNotificationListener extends NotificationListenerService {
                 new_array.put(element);
             } catch (JSONException e) {
                 Log.e(Constants.LOG_TAG, e.getMessage());
+                return "Failed";
             }
         }
-        sPref.setPref(Constants.LISTENER_FILTER_KEY, new_array);
+        final String res = sPref.setPref(Constants.LISTENER_FILTER_KEY, new_array);
+        return res.equals("Success") ? "Removed" : res;
     }
 
-    public void resetListenerFilter() {
-        sPref.setPref(Constants.LISTENER_FILTER_KEY, new JSONArray());
+    public String resetListenerFilter() {
+        final String res = sPref.setPref(Constants.LISTENER_FILTER_KEY, new JSONArray());
+        return res.equals("Success") ? "Reset" : res;
     }
 }

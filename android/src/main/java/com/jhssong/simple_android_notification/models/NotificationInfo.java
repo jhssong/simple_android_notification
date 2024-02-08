@@ -1,5 +1,9 @@
 package com.jhssong.simple_android_notification.models;
 
+import android.util.Log;
+
+import com.jhssong.simple_android_notification.Constants;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,7 +42,7 @@ public class NotificationInfo {
             data.put("subText", extraSubText);
             data.put("summaryText", extraSummaryText);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(Constants.LOG_TAG, e.getMessage());
         }
         return data;
     }

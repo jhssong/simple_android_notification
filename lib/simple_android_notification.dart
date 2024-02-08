@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/services.dart';
 
@@ -16,13 +15,7 @@ class SimpleAndroidNotification {
       String id, String name, String desc, int importance) async {
     final String? res = await _channel.invokeMethod('createNotificationChannel',
         {'id': id, 'name': name, 'desc': desc, 'importance': importance});
-    return res ?? "error";
-  }
-
-  Future<String> removeNotificationChannel(String id) async {
-    final String? res =
-        await _channel.invokeMethod('removeNotificationChannel', {'id': id});
-    return res ?? "error";
+    return res ?? "Error";
   }
 
   Future<List<dynamic>> getNotificationChannelList() async {
@@ -31,9 +24,15 @@ class SimpleAndroidNotification {
     return json.decode(res ?? '[]');
   }
 
+  Future<String> removeNotificationChannel(String id) async {
+    final String? res =
+        await _channel.invokeMethod('removeNotificationChannel', {'id': id});
+    return res ?? "Error";
+  }
+
   Future<String> getPayload() async {
     final String? res = await _channel.invokeMethod('getPayload');
-    return res ?? "error";
+    return res ?? "Error";
   }
 
   Future<bool> hasNotificationPermission() async {
@@ -49,43 +48,39 @@ class SimpleAndroidNotification {
       String id, String title, String content, String payload) async {
     final String? res = await _channel.invokeMethod('showNotification',
         {'id': id, 'title': title, 'content': content, 'payload': payload});
-    return res ?? 'error';
+    return res ?? "Error";
   }
 
-  Future<bool> hasNotificationListenerPermission() async {
-    final bool? res =
-        await _channel.invokeMethod('hasNotificationListenerPermission');
+  Future<bool> hasListenerPermission() async {
+    final bool? res = await _channel.invokeMethod('hasListenerPermission');
     return res ?? false;
   }
 
-  Future<bool> openNotificationListenerPermissionSetting() async {
-    final bool? res = await _channel
-        .invokeMethod('openNotificationListenerPermissionSetting');
-    return res ?? false;
+  Future<void> openListenerPermissionSetting() async {
+    await _channel.invokeMethod('openListenerPermissionSetting');
   }
 
-  Future<List<dynamic>> getListenedNotificationsList() async {
+  Future<List<dynamic>> getListenedNotifications() async {
+    final String? res = await _channel.invokeMethod('getListenedNotifications');
+    return json.decode(res ?? '[]');
+  }
+
+  Future<String> removeListenedNotifications(String id) async {
     final String? res =
-        await _channel.invokeMethod('getListenedNotificationsList');
-    return json.decode(res ?? '[]');
+        await _channel.invokeMethod('removeListenedNotifications', {'id': id});
+    return res ?? "Error";
   }
 
-  Future<List<dynamic>> updateListenedNotificationsList(String id) async {
-    final String? res = await _channel
-        .invokeMethod('updateListenedNotificationsList', {'id': id});
-    return json.decode(res ?? '[]');
-  }
-
-  Future<List<dynamic>> resetListenedNotificationsList() async {
+  Future<String> resetListenedNotifications() async {
     final String? res =
-        await _channel.invokeMethod('resetListenedNotificationsList');
-    return json.decode(res ?? '[]');
+        await _channel.invokeMethod('resetListenedNotifications');
+    return res ?? "Error";
   }
 
-  Future<List<dynamic>> setListenerFilter(String packageName) async {
+  Future<String> addListenerFilter(String packageName) async {
     final String? res = await _channel
-        .invokeMethod('setListenerFilter', {'packageName': packageName});
-    return json.decode(res ?? '[]');
+        .invokeMethod('addListenerFilter', {'packageName': packageName});
+    return res ?? "Error";
   }
 
   Future<List<dynamic>> getListenerFilter() async {
@@ -93,14 +88,14 @@ class SimpleAndroidNotification {
     return json.decode(res ?? '[]');
   }
 
-  Future<List<dynamic>> updateListenerFilter(String packageName) async {
+  Future<String> removeListenerFilter(String packageName) async {
     final String? res = await _channel
-        .invokeMethod('updateListenerFilter', {'packageName': packageName});
-    return json.decode(res ?? '[]');
+        .invokeMethod('removeListenerFilter', {'packageName': packageName});
+    return res ?? "Error";
   }
 
-  Future<List<dynamic>> resetListenerFilter() async {
+  Future<String> resetListenerFilter() async {
     final String? res = await _channel.invokeMethod('resetListenerFilter');
-    return json.decode(res ?? '[]');
+    return res ?? "Error";
   }
 }

@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     getPayload();
     hasNotificationPermission();
-    hasNotificationListenerPermission();
+    hasListenerPermission();
   }
 
   @override
@@ -113,14 +113,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Center(
             child: Text(
-                'hasNotificationListenerPermission : $_notificationListenerPermission'),
+                'hasListenerPermission : $_notificationListenerPermission'),
           ),
           ElevatedButton(
-            onPressed: hasNotificationListenerPermission,
+            onPressed: hasListenerPermission,
             child: const Text('Check Notification Listener Permission'),
           ),
           ElevatedButton(
-            onPressed: openNotificationListenerPermissionSetting,
+            onPressed: openListenerPermissionSetting,
             child: const Text('Open Listener Permission Setting'),
           ),
           ElevatedButton(
@@ -197,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
-                        handleShowNotification(
+                        showNotification(
                           idController.text,
                           titleController.text,
                           contentController.text,
@@ -220,23 +220,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> hasNotificationListenerPermission() async {
-    bool permission = await simpleAndroidNotificationPlugin
-        .hasNotificationListenerPermission();
-    setState(() => _notificationListenerPermission = permission);
-  }
-
-  Future<void> openNotificationListenerPermissionSetting() async {
-    bool permission = await simpleAndroidNotificationPlugin
-        .openNotificationListenerPermissionSetting();
-    setState(() => _notificationListenerPermission = permission);
-  }
-
-  Future<void> handleShowNotification(
+  Future<void> showNotification(
       String id, String title, String content, String payload) async {
-    var navigator = Navigator.of(context);
-    var sm = ScaffoldMessenger.of(context);
-    String res = await simpleAndroidNotificationPlugin.showNotification(
+    final navigator = Navigator.of(context);
+    final sm = ScaffoldMessenger.of(context);
+    final res = await simpleAndroidNotificationPlugin.showNotification(
         id, title, content, payload);
     if (res == "Send") {
       navigator.pop();
@@ -244,5 +232,15 @@ class _HomeScreenState extends State<HomeScreen> {
     sm.showSnackBar(
       SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
     );
+  }
+
+  Future<void> hasListenerPermission() async {
+    bool permission =
+        await simpleAndroidNotificationPlugin.hasListenerPermission();
+    setState(() => _notificationListenerPermission = permission);
+  }
+
+  Future<void> openListenerPermissionSetting() async {
+    await simpleAndroidNotificationPlugin.openListenerPermissionSetting();
   }
 }

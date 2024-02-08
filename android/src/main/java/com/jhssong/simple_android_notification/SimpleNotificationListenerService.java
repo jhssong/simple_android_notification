@@ -49,35 +49,35 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
             Log.e(Constants.LOG_TAG, e.getMessage());
         }
 
-        if (!isFiltered) {
-            Bundle extras = sbn != null ? sbn.getNotification().extras : null;
-            if (extras == null) return;
-            String extraTitle = extras.getString(Notification.EXTRA_TITLE, "");
-            String extraText = extras.getString(Notification.EXTRA_TEXT, "");
-            String extraBigText = extras.getString(Notification.EXTRA_BIG_TEXT, "");
-            String extraInfoText = extras.getString(Notification.EXTRA_INFO_TEXT, "");
-            String extraSubText = extras.getString(Notification.EXTRA_SUB_TEXT, "");
-            String extraSummaryText = extras.getString(Notification.EXTRA_SUMMARY_TEXT, "");
+        if (isFiltered) return;
 
-            Log.d(Constants.LOG_TAG, "onNotificationPosted:\n" +
-                    "PackageName: " + packageName + "\n" +
-                    "Title: " + extraTitle + "\n" +
-                    "Text: " + extraText + "\n" +
-                    "BigText: " + extraBigText + "\n" +
-                    "InfoText: " + extraInfoText + "\n" +
-                    "SubText: " + extraSubText + "\n" +
-                    "SummaryText: " + extraSummaryText + "\n"
-            );
+        Bundle extras = sbn != null ? sbn.getNotification().extras : null;
+        if (extras == null) return;
+        String extraTitle = extras.getString(Notification.EXTRA_TITLE, "");
+        String extraText = extras.getString(Notification.EXTRA_TEXT, "");
+        String extraBigText = extras.getString(Notification.EXTRA_BIG_TEXT, "");
+        String extraInfoText = extras.getString(Notification.EXTRA_INFO_TEXT, "");
+        String extraSubText = extras.getString(Notification.EXTRA_SUB_TEXT, "");
+        String extraSummaryText = extras.getString(Notification.EXTRA_SUMMARY_TEXT, "");
 
-            long uniqueId = Instant.now().toEpochMilli();
-            String id = Long.toString(uniqueId);
+        Log.d(Constants.LOG_TAG, "onNotificationPosted:\n" +
+                "PackageName: " + packageName + "\n" +
+                "Title: " + extraTitle + "\n" +
+                "Text: " + extraText + "\n" +
+                "BigText: " + extraBigText + "\n" +
+                "InfoText: " + extraInfoText + "\n" +
+                "SubText: " + extraSubText + "\n" +
+                "SummaryText: " + extraSummaryText + "\n"
+        );
 
-            NotificationInfo sbnData = new NotificationInfo(
-                    id, packageName, extraTitle, extraText, extraBigText,
-                    extraInfoText, extraSubText, extraSummaryText);
+        long uniqueId = Instant.now().toEpochMilli();
+        String id = Long.toString(uniqueId);
 
-            sPref.addPref(Constants.LISTENED_NOTIFICATIONS_KEY, sbnData.getAsJSON());
-        }
+        NotificationInfo sbnData = new NotificationInfo(
+                id, packageName, extraTitle, extraText, extraBigText,
+                extraInfoText, extraSubText, extraSummaryText);
+
+        sPref.addPref(Constants.LISTENED_NOTIFICATIONS_KEY, sbnData.getAsJSON());
     }
 
     @Override

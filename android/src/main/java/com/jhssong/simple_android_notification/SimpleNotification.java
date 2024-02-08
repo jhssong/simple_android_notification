@@ -54,14 +54,6 @@ public class SimpleNotification {
         return res ? "Created" : "Failed";
     }
 
-    public String removeNotificationChannel(String id) {
-        if (!checkNotificationChannelEnabled(id))
-            return "Channel doesn't exists";
-        notificationManager.deleteNotificationChannel(id);
-        boolean res = checkNotificationChannelEnabled(id);
-        return !res ? "Deleted" : "Failed";
-    }
-
     public String getNotificationChannelList() {
         JSONArray channelArray = new JSONArray();
         List<NotificationChannel> channels = notificationManager.getNotificationChannels();
@@ -75,6 +67,14 @@ public class SimpleNotification {
             channelArray.put(info.getAsJSON());
         }
         return channelArray.toString();
+    }
+
+    public String removeNotificationChannel(String id) {
+        if (!checkNotificationChannelEnabled(id))
+            return "Channel doesn't exists";
+        notificationManager.deleteNotificationChannel(id);
+        boolean res = checkNotificationChannelEnabled(id);
+        return !res ? "Deleted" : "Failed";
     }
 
     public String getPayload() {
