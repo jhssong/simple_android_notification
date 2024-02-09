@@ -26,7 +26,7 @@ class InputBox extends StatelessWidget {
     return TextFormField(
       maxLength: maxLength,
       controller: controller,
-      textInputAction: action,
+      textInputAction: action ?? TextInputAction.next,
       decoration: InputDecoration(
         border: const UnderlineInputBorder(),
         labelText: label,

@@ -190,6 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   InputBox(
                     maxLength: 30,
                     controller: payloadController,
+                    action: TextInputAction.done,
                     label: "Payload",
                     activeValidator: false,
                   ),

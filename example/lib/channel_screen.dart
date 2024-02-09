@@ -84,7 +84,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Form(
               key: formKey,
-              child: Column(
+              child: ListView(
                 children: [
                   InputBox(
                       maxLength: 50, controller: idController, label: "ID"),
@@ -98,7 +98,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                   InputBox(
                     maxLength: 1,
                     controller: importanceController,
-                    action: TextInputAction.next,
+                    action: TextInputAction.done,
                     label: "Importance(0~4)",
                     validatorLabel: "importance level",
                     inputFormatter: [
