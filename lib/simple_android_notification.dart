@@ -1,33 +1,40 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:simple_android_notification/models/channel_data.dart';
+import 'package:simple_android_notification/models/listened_notification_data.dart';
+import 'package:simple_android_notification/models/notification_data.dart';
 import 'package:simple_android_notification/models/package_data.dart';
 
 const _channel = MethodChannel('jhssong/simple_android_notification');
 
 class SimpleAndroidNotification {
-  Future<bool> checkNotificationChannelEnabled(String id) async {
-    final bool? res = await _channel
-        .invokeMethod('checkNotificationChannelEnabled', {'id': id});
+  Future<bool> checkNotificationChannelEnabled(ChannelData channelData) async {
+    final bool? res = await _channel.invokeMethod(
+        'checkNotificationChannelEnabled', {'id': channelData.id});
     return res ?? false;
   }
 
-  Future<String> createNotificationChannel(
-      String id, String name, String desc, int importance) async {
-    final String? res = await _channel.invokeMethod('createNotificationChannel',
-        {'id': id, 'name': name, 'desc': desc, 'importance': importance});
+  Future<String> createNotificationChannel(ChannelData channelData) async {
+    final String? res =
+        await _channel.invokeMethod('createNotificationChannel', {
+      'id': channelData.id,
+      'name': channelData.name,
+      'desc': channelData.desc,
+      'imp': channelData.imp
+    });
     return res ?? "Error";
   }
 
-  Future<List<dynamic>> getNotificationChannelList() async {
+  Future<List<ChannelData>> getNotificationChannelList() async {
     final String? res =
         await _channel.invokeMethod('getNotificationChannelList');
-    return json.decode(res ?? '[]');
+    return ChannelData.parseJSONArrayToList(res);
   }
 
-  Future<String> removeNotificationChannel(String id) async {
-    final String? res =
-        await _channel.invokeMethod('removeNotificationChannel', {'id': id});
+  Future<String> removeNotificationChannel(ChannelData channelData) async {
+    final String? res = await _channel
+        .invokeMethod('removeNotificationChannel', {'id': channelData.id});
     return res ?? "Error";
   }
 
@@ -45,10 +52,13 @@ class SimpleAndroidNotification {
     await _channel.invokeMethod('requestNotificationPermission');
   }
 
-  Future<String> showNotification(
-      String id, String title, String content, String payload) async {
-    final String? res = await _channel.invokeMethod('showNotification',
-        {'id': id, 'title': title, 'content': content, 'payload': payload});
+  Future<String> showNotification(NotificationData notificationData) async {
+    final String? res = await _channel.invokeMethod('showNotification', {
+      'id': notificationData.id,
+      'title': notificationData.title,
+      'content': notificationData.content,
+      'payload': notificationData.payload,
+    });
     return res ?? "Error";
   }
 
@@ -61,14 +71,15 @@ class SimpleAndroidNotification {
     await _channel.invokeMethod('openListenerPermissionSetting');
   }
 
-  Future<List<dynamic>> getListenedNotifications() async {
+  Future<List<ListenedNotificationData>> getListenedNotifications() async {
     final String? res = await _channel.invokeMethod('getListenedNotifications');
-    return json.decode(res ?? '[]');
+    return ListenedNotificationData.parseJSONArrayToList(res);
   }
 
-  Future<String> removeListenedNotifications(String id) async {
-    final String? res =
-        await _channel.invokeMethod('removeListenedNotifications', {'id': id});
+  Future<String> removeListenedNotifications(
+      ListenedNotificationData listenedNotificationData) async {
+    final String? res = await _channel.invokeMethod(
+        'removeListenedNotifications', {'id': listenedNotificationData.id});
     return res ?? "Error";
   }
 
@@ -102,15 +113,6 @@ class SimpleAndroidNotification {
 
   Future<List<PackageData>> getPackageList() async {
     final String? res = await _channel.invokeMethod('getPackageList');
-    List<dynamic> decodedList = json.decode(res ?? '[]');
-
-    List<PackageData> packageDataList = decodedList.map((item) {
-      return PackageData(
-        packageName: item['packageName'],
-        appName: item['appName'],
-        isSystemApp: item['isSystemApp'],
-      );
-    }).toList();
-    return packageDataList;
+    return PackageData.parseJSONArrayToList(res);
   }
 }

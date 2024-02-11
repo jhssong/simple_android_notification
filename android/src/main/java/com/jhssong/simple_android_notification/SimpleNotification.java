@@ -46,8 +46,8 @@ public class SimpleNotification {
     public String createNotificationChannel(NotificationChannelInfo info) {
         if (checkNotificationChannelEnabled(info.id))
             return "Channel already exists";
-        NotificationChannel channel = new NotificationChannel(info.id, info.name, info.importance);
-        channel.setDescription(info.description);
+        NotificationChannel channel = new NotificationChannel(info.id, info.name, info.imp);
+        channel.setDescription(info.desc);
         notificationManager.createNotificationChannel(channel);
 
         boolean res = checkNotificationChannelEnabled(info.id);
@@ -79,15 +79,14 @@ public class SimpleNotification {
 
     public String getPayload() {
         Intent activityIntent = activity.getIntent();
-        String payload;
+        String payload = null;
 
         if (activityIntent != null) {
             Bundle extras = activityIntent.getExtras();
             if (extras != null && extras.containsKey(Constants.NOTIFICATION_PAYLOAD_KEY)) {
                 payload = extras.getString(Constants.NOTIFICATION_PAYLOAD_KEY);
             } else {
-                payload = null;
-                Log.d(Constants.LOG_TAG, "Payload key not found. ");
+                payload = "empty";
                 // if (extras != null) {
                 //     for (String key : extras.keySet()) {
                 //         Object value = extras.get(key);
@@ -96,8 +95,7 @@ public class SimpleNotification {
                 //     }
                 // }
             }
-        } else payload = "empty";
-
+        }
         return payload;
     }
 

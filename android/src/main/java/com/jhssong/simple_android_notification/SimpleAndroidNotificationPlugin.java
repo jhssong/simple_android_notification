@@ -48,7 +48,7 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
         final String id = call.argument("id");
         final String name = call.argument("name");
         final String desc = call.argument("desc");
-        final Integer importance = call.argument("importance");
+        final Integer imp = call.argument("imp");
         final String packageName = call.argument("packageName");
         final String title = call.argument("title");
         final String content = call.argument("content");
@@ -59,7 +59,7 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
                 result.success(simpleNotification.checkNotificationChannelEnabled(id));
                 break;
             case "createNotificationChannel":
-                NotificationChannelInfo info = new NotificationChannelInfo(id, name, desc, importance);
+                NotificationChannelInfo info = new NotificationChannelInfo(id, name, desc, imp);
                 result.success(simpleNotification.createNotificationChannel(info));
                 break;
             case "getNotificationChannelList":
@@ -119,16 +119,13 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
     }
 
     @Override
-    public void onDetachedFromActivity() {
-    }
+    public void onDetachedFromActivity() {}
 
     @Override
-    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
-    }
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {}
 
     @Override
-    public void onDetachedFromActivityForConfigChanges() {
-    }
+    public void onDetachedFromActivityForConfigChanges() {}
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {

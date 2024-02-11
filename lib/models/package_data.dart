@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class PackageData {
   String packageName;
   String appName;
@@ -8,4 +10,16 @@ class PackageData {
     required this.appName,
     required this.isSystemApp,
   });
+
+  static List<PackageData> parseJSONArrayToList(String? res) {
+    List<dynamic> decodedList = json.decode(res ?? '[]');
+    List<PackageData> packageDataList = decodedList.map((item) {
+      return PackageData(
+        packageName: item['packageName'],
+        appName: item['appName'],
+        isSystemApp: item['isSystemApp'],
+      );
+    }).toList();
+    return packageDataList;
+  }
 }

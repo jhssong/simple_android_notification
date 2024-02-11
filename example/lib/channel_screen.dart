@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:simple_android_notification/models/channel_data.dart';
 
 import 'package:simple_android_notification/simple_android_notification.dart';
 import 'package:simple_android_notification_example/widgets/info_box.dart';
@@ -15,7 +16,7 @@ class ChannelScreen extends StatefulWidget {
 }
 
 class _ChannelScreenState extends State<ChannelScreen> {
-  List<dynamic> list = [];
+  List<ChannelData> list = [];
 
   @override
   void initState() {
@@ -47,19 +48,16 @@ class _ChannelScreenState extends State<ChannelScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      InfoBox(label: 'Id', value: list[i]['id']),
-                      InfoBox(label: 'Name', value: list[i]['name']),
+                      InfoBox(label: 'Id', value: list[i].id),
+                      InfoBox(label: 'Name', value: list[i].name),
+                      InfoBox(label: 'Description', value: list[i].desc),
                       InfoBox(
-                          label: 'Description', value: list[i]['description']),
-                      InfoBox(
-                          label: 'Importance',
-                          value: list[i]['importance'].toString()),
+                          label: 'Importance', value: list[i].imp.toString()),
                     ],
                   ),
-                  if (list[i]['id'] != "default_channel")
+                  if (list[i].id != "default_channel")
                     IconButton(
-                      onPressed: () =>
-                          removeNotificationChannel(context, list[i]['id']),
+                      onPressed: () => removeNotificationChannel(list[i]),
                       icon: const Icon(Icons.delete),
                     ),
                 ],
@@ -74,7 +72,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
     final TextEditingController idController = TextEditingController();
     final TextEditingController nameController = TextEditingController();
     final TextEditingController descController = TextEditingController();
-    final TextEditingController importanceController = TextEditingController();
+    final TextEditingController impController = TextEditingController();
     final formKey = GlobalKey<FormState>();
     showDialog(
       context: context,
@@ -97,7 +95,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                   ),
                   InputBox(
                     maxLength: 1,
-                    controller: importanceController,
+                    controller: impController,
                     action: TextInputAction.done,
                     label: "Importance(0~4)",
                     validatorLabel: "importance level",
@@ -109,12 +107,13 @@ class _ChannelScreenState extends State<ChannelScreen> {
                   ElevatedButton(
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
-                        createNotificationChannel(
-                          idController.text,
-                          nameController.text,
-                          descController.text,
-                          int.parse(importanceController.text),
+                        var channelData = ChannelData(
+                          id: idController.text,
+                          name: nameController.text,
+                          desc: descController.text,
+                          imp: int.parse(impController.text),
                         );
+                        createNotificationChannel(channelData);
                       }
                     },
                     child: const Text("Create Channel"),
@@ -132,12 +131,11 @@ class _ChannelScreenState extends State<ChannelScreen> {
     );
   }
 
-  Future<void> createNotificationChannel(
-      String id, String name, String desc, int importance) async {
+  Future<void> createNotificationChannel(ChannelData channelData) async {
     Navigator.pop(context);
     final sm = ScaffoldMessenger.of(context);
     final res = await widget.simpleAndroidNotificationPlugin
-        .createNotificationChannel(id, name, desc, importance);
+        .createNotificationChannel(channelData);
     sm.showSnackBar(
       SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
     );
@@ -145,16 +143,15 @@ class _ChannelScreenState extends State<ChannelScreen> {
   }
 
   Future<void> getNotificationChannelList() async {
-    final List<dynamic> res = await widget.simpleAndroidNotificationPlugin
+    final List<ChannelData> res = await widget.simpleAndroidNotificationPlugin
         .getNotificationChannelList();
     setState(() => list = res);
   }
 
-  Future<void> removeNotificationChannel(
-      BuildContext context, String id) async {
+  Future<void> removeNotificationChannel(ChannelData channelData) async {
     final sm = ScaffoldMessenger.of(context);
     final res = await widget.simpleAndroidNotificationPlugin
-        .removeNotificationChannel(id);
+        .removeNotificationChannel(channelData);
     sm.showSnackBar(
         SnackBar(content: Text(res), duration: const Duration(seconds: 2)));
     await getNotificationChannelList();

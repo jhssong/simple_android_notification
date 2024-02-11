@@ -6,15 +6,15 @@ import org.json.JSONObject;
 public class NotificationChannelInfo {
     public String id;
     public CharSequence name;
-    public String description;
-    public int importance;
+    public String desc;
+    public int imp;
 
     public NotificationChannelInfo(
             String id, CharSequence name, String description, int importance) {
         this.id = id;
         this.name = name;
-        this.description = description;
-        this.importance = importance;
+        this.desc = description;
+        this.imp = importance;
     }
 
     public JSONObject getAsJSON() {
@@ -22,8 +22,8 @@ public class NotificationChannelInfo {
         try {
             data.put("id", id);
             data.put("name", name);
-            data.put("description", description);
-            data.put("importance", importance);
+            data.put("desc", desc);
+            data.put("imp", imp);
         } catch (JSONException e) {
             e.printStackTrace();
         }

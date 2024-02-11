@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:simple_android_notification/models/listened_notification_data.dart';
 import 'package:simple_android_notification/models/package_data.dart';
 
 import 'package:simple_android_notification/simple_android_notification.dart';
@@ -16,7 +17,7 @@ class ListenerScreen extends StatefulWidget {
 }
 
 class _ListenerScreenState extends State<ListenerScreen> {
-  List<dynamic> list = [];
+  List<ListenedNotificationData> list = [];
   @override
   void initState() {
     super.initState();
@@ -60,20 +61,18 @@ class _ListenerScreenState extends State<ListenerScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      InfoBox(label: 'Id', value: list[i]['id']),
-                      InfoBox(
-                          label: 'PackageName', value: list[i]['packageName']),
-                      InfoBox(label: 'Title', value: list[i]['title']),
-                      InfoBox(label: 'Text', value: list[i]['text']),
-                      InfoBox(label: 'BigText', value: list[i]['bigText']),
-                      InfoBox(label: 'InfoText', value: list[i]['infoText']),
-                      InfoBox(label: 'SubText', value: list[i]['subText']),
-                      InfoBox(
-                          label: 'SummaryText', value: list[i]['summaryText']),
+                      InfoBox(label: 'Id', value: list[i].id),
+                      InfoBox(label: 'PackageName', value: list[i].packageName),
+                      InfoBox(label: 'Title', value: list[i].title),
+                      InfoBox(label: 'Text', value: list[i].text),
+                      InfoBox(label: 'BigText', value: list[i].bigText),
+                      InfoBox(label: 'InfoText', value: list[i].infoText),
+                      InfoBox(label: 'SubText', value: list[i].subText),
+                      InfoBox(label: 'SummaryText', value: list[i].summaryText),
                     ],
                   ),
                   IconButton(
-                    onPressed: () => removeListenedNotifications(list[i]['id']),
+                    onPressed: () => removeListenedNotifications(list[i]),
                     icon: const Icon(Icons.delete),
                   ),
                 ],
@@ -85,15 +84,16 @@ class _ListenerScreenState extends State<ListenerScreen> {
   }
 
   Future<void> getListenedNotifications() async {
-    final List<dynamic> res =
+    final List<ListenedNotificationData> res =
         await widget.simpleAndroidNotificationPlugin.getListenedNotifications();
     setState(() => list = res);
   }
 
-  Future<void> removeListenedNotifications(String id) async {
+  Future<void> removeListenedNotifications(
+      ListenedNotificationData listenedNotificationData) async {
     final sm = ScaffoldMessenger.of(context);
     final res = await widget.simpleAndroidNotificationPlugin
-        .removeListenedNotifications(id);
+        .removeListenedNotifications(listenedNotificationData);
     sm.showSnackBar(
       SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
     );

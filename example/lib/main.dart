@@ -2,6 +2,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:simple_android_notification/models/notification_data.dart';
 import 'dart:async';
 
 import 'package:simple_android_notification/simple_android_notification.dart';
@@ -53,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Center(child: Text('Payload: $_payload')),
           Center(
               child: Text(
-            "If not null, app was opened by tapping the notification",
+            "If not null, App was opened by tapping the notifications",
             style: theme.textTheme.labelSmall,
           )),
           const Divider(),
@@ -198,12 +199,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
-                        showNotification(
-                          idController.text,
-                          titleController.text,
-                          contentController.text,
-                          payloadController.text,
-                        );
+                        var notificationData = NotificationData(
+                            id: idController.text,
+                            title: titleController.text,
+                            content: contentController.text,
+                            payload: payloadController.text);
+                        showNotification(notificationData);
                       }
                     },
                     child: const Text("Send Notification"),
@@ -221,12 +222,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> showNotification(
-      String id, String title, String content, String payload) async {
+  Future<void> showNotification(NotificationData notificationData) async {
     final navigator = Navigator.of(context);
     final sm = ScaffoldMessenger.of(context);
-    final res = await simpleAndroidNotificationPlugin.showNotification(
-        id, title, content, payload);
+    final res = await simpleAndroidNotificationPlugin
+        .showNotification(notificationData);
     if (res == "Send") {
       navigator.pop();
     }
