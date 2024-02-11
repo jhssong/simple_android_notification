@@ -2,6 +2,8 @@ package com.jhssong.simple_android_notification;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.service.notification.NotificationListenerService;
@@ -13,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Set;
 
 import io.flutter.Log;
@@ -111,5 +114,27 @@ public class SimpleNotificationListener extends NotificationListenerService {
     public String resetListenerFilter() {
         final String res = sPref.setPref(Constants.LISTENER_FILTER_KEY, new JSONArray());
         return res.equals("Success") ? "Reset" : res;
+    }
+
+    public String getPackageList() {
+        PackageManager packageManager = context.getPackageManager();
+        List<ApplicationInfo> installedApplications  = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        JSONArray list = new JSONArray();
+
+        for (ApplicationInfo appInfo : installedApplications ) {
+            String packageName = appInfo.packageName;
+            String appName = appInfo.loadLabel(packageManager).toString();
+            boolean isSystemApp = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+            JSONObject data = new JSONObject();
+            try {
+                data.put("packageName", packageName);
+                data.put("appName", appName);
+                data.put("isSystemApp", isSystemApp);
+            } catch (JSONException e) {
+                android.util.Log.e(Constants.LOG_TAG, e.getMessage());
+            }
+            list.put(data);
+        }
+        return list.toString();
     }
 }

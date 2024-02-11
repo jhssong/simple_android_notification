@@ -96,7 +96,7 @@ public class SimpleNotification {
                 //     }
                 // }
             }
-        } else payload = "null";
+        } else payload = "empty";
 
         return payload;
     }

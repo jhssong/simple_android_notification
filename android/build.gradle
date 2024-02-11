@@ -34,7 +34,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 26
     }
 
     dependencies {
@@ -51,4 +51,8 @@ android {
             }
         }
     }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 }

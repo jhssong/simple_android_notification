@@ -32,10 +32,9 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
         String packageName = sbn != null ? sbn.getPackageName() : "Null";
 
         String filterString = simpleNotificationListener.getListenerFilter();
-        JSONArray filterArray;
         boolean isFiltered = false;
         try {
-            filterArray = new JSONArray(filterString);
+            JSONArray filterArray = new JSONArray(filterString);
             for (int i = 0; i < filterArray.length(); i++) {
                 try {
                     JSONObject element = filterArray.getJSONObject(i);
@@ -49,7 +48,8 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
             Log.e(Constants.LOG_TAG, e.getMessage());
         }
 
-        if (isFiltered) return;
+        // If filtered, save the notification info in sharedPreferences
+        if (!isFiltered) return;
 
         Bundle extras = sbn != null ? sbn.getNotification().extras : null;
         if (extras == null) return;

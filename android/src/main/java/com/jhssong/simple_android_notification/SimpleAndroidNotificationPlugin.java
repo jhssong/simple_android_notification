@@ -109,6 +109,9 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
             case "resetListenerFilter":
                 result.success(simpleNotificationListener.resetListenerFilter());
                 break;
+            case "getPackageList":
+                result.success(simpleNotificationListener.getPackageList());
+                break;
             default:
                 result.notImplemented();
                 break;

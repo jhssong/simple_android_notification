@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:simple_android_notification/models/package_data.dart';
 
 const _channel = MethodChannel('jhssong/simple_android_notification');
 
@@ -97,5 +98,19 @@ class SimpleAndroidNotification {
   Future<String> resetListenerFilter() async {
     final String? res = await _channel.invokeMethod('resetListenerFilter');
     return res ?? "Error";
+  }
+
+  Future<List<PackageData>> getPackageList() async {
+    final String? res = await _channel.invokeMethod('getPackageList');
+    List<dynamic> decodedList = json.decode(res ?? '[]');
+
+    List<PackageData> packageDataList = decodedList.map((item) {
+      return PackageData(
+        packageName: item['packageName'],
+        appName: item['appName'],
+        isSystemApp: item['isSystemApp'],
+      );
+    }).toList();
+    return packageDataList;
   }
 }

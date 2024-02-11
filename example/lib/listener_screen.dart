@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:simple_android_notification/models/package_data.dart';
 
 import 'package:simple_android_notification/simple_android_notification.dart';
 import 'package:simple_android_notification_example/widgets/info_box.dart';
@@ -37,7 +40,7 @@ class _ListenerScreenState extends State<ListenerScreen> {
                         )),
               );
             },
-            icon: const Icon(Icons.filter_alt_outlined),
+            icon: const Icon(Icons.filter_list),
           ),
           IconButton(
             onPressed: resetListenedNotifications,
@@ -92,7 +95,7 @@ class _ListenerScreenState extends State<ListenerScreen> {
     final res = await widget.simpleAndroidNotificationPlugin
         .removeListenedNotifications(id);
     sm.showSnackBar(
-      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+      SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
     );
     await getListenedNotifications();
   }
@@ -102,7 +105,7 @@ class _ListenerScreenState extends State<ListenerScreen> {
     final res = await widget.simpleAndroidNotificationPlugin
         .resetListenedNotifications();
     sm.showSnackBar(
-      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+      SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
     );
     await getListenedNotifications();
   }
@@ -118,11 +121,16 @@ class ListenerFilterScreen extends StatefulWidget {
 }
 
 class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
-  List<dynamic> list = [];
+  List<dynamic> filteredApp = [];
+  List<PackageData> listAll = [];
+  List<PackageData> list = [];
+  bool showSystemApp = false;
+
   @override
   void initState() {
     super.initState();
     getListenerFilter();
+    getPackageList();
   }
 
   @override
@@ -130,100 +138,90 @@ class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Listener Filter List"),
-        actions: [
-          IconButton(
-            onPressed: () => showAddListenerFilterDialog(context),
-            icon: const Icon(Icons.add),
-          ),
-          IconButton(
-            onPressed: resetListenerFilter,
-            icon: const Icon(Icons.delete_outline),
-          ),
-        ],
       ),
-      body: ListView(
+      body: Column(
         children: [
-          for (var i = 0; i < list.length; i++)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InfoBox(
-                          label: 'PackageName', value: list[i]['packageName']),
-                    ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Column(
+              children: [
+                TextField(
+                  onChanged: (value) => filterSearchResults(value),
+                  decoration: const InputDecoration(
+                    labelText: 'Search',
+                    prefixIcon: Icon(Icons.search),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    isDense: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                    ),
                   ),
-                  IconButton(
-                    onPressed: () =>
-                        removeListenerFilter(list[i]['packageName']),
-                    icon: const Icon(Icons.delete),
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  void showAddListenerFilterDialog(BuildContext context) {
-    final TextEditingController nameController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Form(
-                key: formKey,
-                child: Column(
+                ),
+                Row(
                   children: [
-                    TextFormField(
-                      maxLength: 30,
-                      controller: nameController,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Package name',
+                    const Text('Filter'),
+                    Expanded(
+                      flex: 1,
+                      child: TextButton(
+                        onPressed: getPackageList,
+                        child: const Text('All'),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter name';
-                        }
-                        return null;
-                      },
                     ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (formKey.currentState!.validate()) {
-                          Navigator.pop(context);
-                          await widget.simpleAndroidNotificationPlugin
-                              .addListenerFilter(
-                            nameController.text,
-                          );
-                          await getListenerFilter();
-                        }
-                      },
-                      child: const Text("Create Filter"),
+                    Expanded(
+                      flex: 1,
+                      child: TextButton(
+                        onPressed: filterActivated,
+                        child: const Text('Activated'),
+                      ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Cancel"),
+                    Expanded(
+                      flex: 1,
+                      child: TextButton(
+                        onPressed: filterSystemApps,
+                        child: const Text('System apps'),
+                      ),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
-          );
-        });
+          ),
+          Expanded(
+            child: ListView(
+              children: [
+                for (var i = 0; i < list.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text(
+                            list[i].appName,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 10,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Switch(
+                            onChanged: (bool value) =>
+                                handleFilterSwitch(list[i], value),
+                            value: checkIsFiltered(list[i]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> addListenerFilter(String packageName) async {
@@ -231,7 +229,7 @@ class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
     final res = await widget.simpleAndroidNotificationPlugin
         .addListenerFilter(packageName);
     sm.showSnackBar(
-      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+      SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
     );
     await getListenerFilter();
   }
@@ -239,7 +237,7 @@ class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
   Future<void> getListenerFilter() async {
     final List<dynamic> res =
         await widget.simpleAndroidNotificationPlugin.getListenerFilter();
-    setState(() => list = res);
+    setState(() => filteredApp = res);
   }
 
   Future<void> removeListenerFilter(String packageName) async {
@@ -247,7 +245,7 @@ class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
     final res = await widget.simpleAndroidNotificationPlugin
         .removeListenerFilter(packageName);
     sm.showSnackBar(
-      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+      SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
     );
     await getListenerFilter();
   }
@@ -257,8 +255,68 @@ class _ListenerFilterScreenState extends State<ListenerFilterScreen> {
     final res =
         await widget.simpleAndroidNotificationPlugin.resetListenerFilter();
     sm.showSnackBar(
-      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
+      SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
     );
     await getListenerFilter();
+  }
+
+  Future<void> getPackageList() async {
+    final res = await widget.simpleAndroidNotificationPlugin.getPackageList();
+    setState(() => listAll = res);
+    setState(() => list = res);
+  }
+
+  void filterActivated() {
+    List<PackageData> filteredList = [];
+    for (var appInfo in listAll) {
+      if (checkIsFiltered(appInfo)) {
+        filteredList.add(appInfo);
+      }
+    }
+    setState(() => list = filteredList);
+  }
+
+  void filterSystemApps() {
+    List<PackageData> filteredList = [];
+    for (var appInfo in listAll) {
+      if (appInfo.isSystemApp) {
+        filteredList.add(appInfo);
+      }
+    }
+    setState(() => list = filteredList);
+  }
+
+  void filterSearchResults(String value) {
+    List<PackageData> searchedList = [];
+    if (value.isNotEmpty) {
+      log(value);
+      for (var item in listAll) {
+        if (item.packageName.toLowerCase().contains(value.toLowerCase())) {
+          searchedList.add(item);
+        } else if (item.appName.toLowerCase().contains(value.toLowerCase())) {
+          searchedList.add(item);
+        }
+      }
+    } else {
+      searchedList = listAll;
+    }
+    setState(() => list = searchedList);
+  }
+
+  void handleFilterSwitch(PackageData appInfo, bool value) {
+    if (value == true) {
+      addListenerFilter(appInfo.packageName);
+    } else {
+      removeListenerFilter(appInfo.packageName);
+    }
+  }
+
+  bool checkIsFiltered(PackageData appInfo) {
+    for (var item in filteredApp) {
+      if (item.containsValue(appInfo.packageName)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
