@@ -11,6 +11,9 @@ import android.service.notification.NotificationListenerService;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.jhssong.simple_android_notification.models.FilterData;
+import com.jhssong.simple_android_notification.models.PackageData;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -122,18 +125,8 @@ public class SimpleNotificationListener extends NotificationListenerService {
         JSONArray list = new JSONArray();
 
         for (ApplicationInfo appInfo : installedApplications ) {
-            String packageName = appInfo.packageName;
-            String appName = appInfo.loadLabel(packageManager).toString();
-            boolean isSystemApp = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
-            JSONObject data = new JSONObject();
-            try {
-                data.put("packageName", packageName);
-                data.put("appName", appName);
-                data.put("isSystemApp", isSystemApp);
-            } catch (JSONException e) {
-                android.util.Log.e(Constants.LOG_TAG, e.getMessage());
-            }
-            list.put(data);
+            PackageData data = new PackageData(appInfo, packageManager);
+            list.put(data.getAsJSON());
         }
         return list.toString();
     }

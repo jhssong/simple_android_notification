@@ -8,7 +8,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.jhssong.simple_android_notification.models.NotificationChannelInfo;
+import com.jhssong.simple_android_notification.models.ChannelData;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -49,17 +49,18 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
         final String name = call.argument("name");
         final String desc = call.argument("desc");
         final Integer imp = call.argument("imp");
-        final String packageName = call.argument("packageName");
         final String title = call.argument("title");
         final String content = call.argument("content");
         final String payload = call.argument("payload");
+        final String packageName = call.argument("packageName");
+
 
         switch (call.method) {
             case "checkNotificationChannelEnabled":
                 result.success(simpleNotification.checkNotificationChannelEnabled(id));
                 break;
             case "createNotificationChannel":
-                NotificationChannelInfo info = new NotificationChannelInfo(id, name, desc, imp);
+                ChannelData info = new ChannelData(id, name, desc, imp);
                 result.success(simpleNotification.createNotificationChannel(info));
                 break;
             case "getNotificationChannelList":

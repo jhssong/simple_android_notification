@@ -17,7 +17,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
-import com.jhssong.simple_android_notification.models.NotificationChannelInfo;
+import com.jhssong.simple_android_notification.models.ChannelData;
 
 import org.json.JSONArray;
 
@@ -43,7 +43,7 @@ public class SimpleNotification {
         return channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
     }
 
-    public String createNotificationChannel(NotificationChannelInfo info) {
+    public String createNotificationChannel(ChannelData info) {
         if (checkNotificationChannelEnabled(info.id))
             return "Channel already exists";
         NotificationChannel channel = new NotificationChannel(info.id, info.name, info.imp);
@@ -59,11 +59,7 @@ public class SimpleNotification {
         List<NotificationChannel> channels = notificationManager.getNotificationChannels();
 
         for (NotificationChannel channel : channels) {
-            String id = channel.getId();
-            CharSequence name = channel.getName();
-            String desc = channel.getDescription();
-            int importance = channel.getImportance();
-            NotificationChannelInfo info = new NotificationChannelInfo(id, name, desc, importance);
+            ChannelData info = new ChannelData(channel);
             channelArray.put(info.getAsJSON());
         }
         return channelArray.toString();

@@ -1,6 +1,5 @@
 package com.jhssong.simple_android_notification;
 
-import android.app.Notification;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,7 +8,7 @@ import android.service.notification.StatusBarNotification;
 
 import androidx.annotation.RequiresApi;
 
-import com.jhssong.simple_android_notification.models.NotificationInfo;
+import com.jhssong.simple_android_notification.models.NotificationData;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +28,7 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
         SharedPref sPref = new SharedPref(context);
         SimpleNotificationListener simpleNotificationListener = new SimpleNotificationListener(context);
 
+        String id = Long.toString(Instant.now().toEpochMilli());
         String packageName = sbn != null ? sbn.getPackageName() : "Null";
 
         String filterString = simpleNotificationListener.getListenerFilter();
@@ -53,33 +53,14 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
 
         Bundle extras = sbn != null ? sbn.getNotification().extras : null;
         if (extras == null) return;
-        String extraTitle = extras.getString(Notification.EXTRA_TITLE, "");
-        String extraText = extras.getString(Notification.EXTRA_TEXT, "");
-        String extraBigText = extras.getString(Notification.EXTRA_BIG_TEXT, "");
-        String extraInfoText = extras.getString(Notification.EXTRA_INFO_TEXT, "");
-        String extraSubText = extras.getString(Notification.EXTRA_SUB_TEXT, "");
-        String extraSummaryText = extras.getString(Notification.EXTRA_SUMMARY_TEXT, "");
 
-        Log.d(Constants.LOG_TAG, "onNotificationPosted:\n" +
-                "PackageName: " + packageName + "\n" +
-                "Title: " + extraTitle + "\n" +
-                "Text: " + extraText + "\n" +
-                "BigText: " + extraBigText + "\n" +
-                "InfoText: " + extraInfoText + "\n" +
-                "SubText: " + extraSubText + "\n" +
-                "SummaryText: " + extraSummaryText + "\n"
-        );
 
-        long uniqueId = Instant.now().toEpochMilli();
-        String id = Long.toString(uniqueId);
-
-        NotificationInfo sbnData = new NotificationInfo(
-                id, packageName, extraTitle, extraText, extraBigText,
-                extraInfoText, extraSubText, extraSummaryText);
+        NotificationData sbnData = new NotificationData(id, packageName, extras);
 
         sPref.addPref(Constants.LISTENED_NOTIFICATIONS_KEY, sbnData.getAsJSON());
     }
 
     @Override
-    public void onNotificationRemoved(StatusBarNotification sbn) {}
+    public void onNotificationRemoved(StatusBarNotification sbn) {
+    }
 }

@@ -46,12 +46,6 @@ public class SharedPref {
     public String addPref(String key, JSONObject item) {
         try {
             JSONArray old_array = getPref(key);
-            if (key.equals(Constants.LISTENER_FILTER_KEY))
-                for (int i = 0; i < old_array.length(); i++) {
-                    JSONObject element = old_array.getJSONObject(i);
-                    if (item.getString("packageName").equals(element.getString("packageName")))
-                        return "Duplicated";
-                }
             old_array.put(item);
             setPref(key, old_array);
             return "Success";

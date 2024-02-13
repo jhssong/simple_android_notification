@@ -1,7 +1,12 @@
 package com.jhssong.simple_android_notification;
 
-import com.jhssong.simple_android_notification.models.NotificationChannelInfo;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
+import com.jhssong.simple_android_notification.models.ChannelData;
+
+@RequiresApi(api = Build.VERSION_CODES.O)
 public final class Constants {
     public static final String METHOD_CHANNEL = "jhssong/simple_android_notification";
     public static final String LOG_TAG = "simple_notification";
@@ -10,7 +15,7 @@ public final class Constants {
     public static final CharSequence DEFAULT_CHANNEL_NAME = "Default Channel";
     public static final String DEFAULT_CHANNEL_DESC = "Default Notification Channel";
     public static final int DEFAULT_CHANNEL_IMPORTANCE = 2;
-    public static final NotificationChannelInfo DEFAULT_CHANNEL_INFO = new NotificationChannelInfo(
+    public static final ChannelData DEFAULT_CHANNEL_INFO = new ChannelData(
             DEFAULT_CHANNEL_ID, DEFAULT_CHANNEL_NAME, DEFAULT_CHANNEL_DESC, DEFAULT_CHANNEL_IMPORTANCE
     );
     public static final int NOTIFICATION_PERMISSIONS_REQUEST_CODE = 1001;
