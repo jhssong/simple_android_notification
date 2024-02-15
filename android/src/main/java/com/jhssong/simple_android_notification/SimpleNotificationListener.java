@@ -27,10 +27,12 @@ import io.flutter.Log;
 public class SimpleNotificationListener extends NotificationListenerService {
     private final Context context;
     private final SharedPref sPref;
+    private final NotificationsDB notificationsDB;
 
     SimpleNotificationListener(Context context) {
         this.context = context;
         this.sPref = new SharedPref(context);
+        this.notificationsDB = new NotificationsDB(context);
     }
 
     public boolean hasListenerPermission() {
@@ -52,31 +54,18 @@ public class SimpleNotificationListener extends NotificationListenerService {
     }
 
     public String getListenedNotifications() {
-        JSONArray listenedNotificationsList = sPref.getPref(Constants.LISTENED_NOTIFICATIONS_KEY);
-        return listenedNotificationsList.toString();
+        return notificationsDB.queryData().toString();
     }
 
     public String removeListenedNotifications(String id) {
-        JSONArray old_array = sPref.getPref(Constants.LISTENED_NOTIFICATIONS_KEY);
-        JSONArray new_array = new JSONArray();
-
-        for (int i = 0; i < old_array.length(); i++) {
-            try {
-                JSONObject element = old_array.getJSONObject(i);
-                if (id.equals(element.getString("id"))) continue;
-                new_array.put(element);
-            } catch (JSONException e) {
-                Log.e(Constants.LOG_TAG, e.getMessage());
-                return "Failed";
-            }
-        }
-        final String res = sPref.setPref(Constants.LISTENED_NOTIFICATIONS_KEY, new_array);
-        return res.equals("Success") ? "Removed" : res;
+        int stringID = Integer.parseInt(id);
+        notificationsDB.deleteData(stringID);
+        return "Removed";
     }
 
     public String resetListenedNotifications() {
-        final String res = sPref.setPref(Constants.LISTENED_NOTIFICATIONS_KEY, new JSONArray());
-        return res.equals("Success") ? "Reset" : res;
+        notificationsDB.resetData();
+        return "Reset";
     }
 
     public String addListenerFilter(String packageName) {

@@ -54,13 +54,13 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
         final String payload = call.argument("payload");
         final String packageName = call.argument("packageName");
 
-
         switch (call.method) {
             case "checkNotificationChannelEnabled":
                 result.success(simpleNotification.checkNotificationChannelEnabled(id));
                 break;
             case "createNotificationChannel":
                 ChannelData info = new ChannelData(id, name, desc, imp);
+                simpleNotification.createNotificationChannel(info);
                 result.success(simpleNotification.createNotificationChannel(info));
                 break;
             case "getNotificationChannelList":

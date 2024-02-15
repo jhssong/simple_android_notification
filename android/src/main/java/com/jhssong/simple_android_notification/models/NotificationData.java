@@ -1,6 +1,7 @@
 package com.jhssong.simple_android_notification.models;
 
 import android.app.Notification;
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -30,20 +31,16 @@ public class NotificationData {
         this.extraSummaryText = extras.getString(Notification.EXTRA_SUMMARY_TEXT, "");
     }
 
-    public JSONObject getAsJSON() {
-        JSONObject data = new JSONObject();
-        try {
-            data.put("id", id);
-            data.put("packageName", packageName);
-            data.put("title", extraTitle);
-            data.put("text", extraText);
-            data.put("bigText", extraBigText);
-            data.put("infoText", extraInfoText);
-            data.put("subText", extraSubText);
-            data.put("summaryText", extraSummaryText);
-        } catch (JSONException e) {
-            Log.e(Constants.LOG_TAG, e.getMessage());
-        }
-        return data;
+    public ContentValues getAsContentValues() {
+        ContentValues values = new ContentValues();
+        values.put("packageName", packageName);
+        values.put("title", extraTitle);
+        values.put("text", extraText);
+        values.put("bigText", extraBigText);
+        values.put("infoText", extraInfoText);
+        values.put("subText", extraSubText);
+        values.put("summaryText", extraSummaryText);
+        return values;
     }
+
 }

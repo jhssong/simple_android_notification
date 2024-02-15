@@ -25,7 +25,7 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
         // TODO Show notification when proper notification was received
         //      (make this feature controllable)
         Context context = getApplicationContext();
-        SharedPref sPref = new SharedPref(context);
+        NotificationsDB notificationsDB = new NotificationsDB(context);
         SimpleNotificationListener simpleNotificationListener = new SimpleNotificationListener(context);
 
         String id = Long.toString(Instant.now().toEpochMilli());
@@ -49,15 +49,13 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
         }
 
         // If filtered, save the notification info in sharedPreferences
-        if (!isFiltered) return;
+//        if (!isFiltered) return;
 
         Bundle extras = sbn != null ? sbn.getNotification().extras : null;
         if (extras == null) return;
 
-
         NotificationData sbnData = new NotificationData(id, packageName, extras);
-
-        sPref.addPref(Constants.LISTENED_NOTIFICATIONS_KEY, sbnData.getAsJSON());
+        notificationsDB.insertData(sbnData.getAsContentValues());
     }
 
     @Override
