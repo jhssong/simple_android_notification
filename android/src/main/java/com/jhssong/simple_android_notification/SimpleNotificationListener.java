@@ -11,7 +11,6 @@ import android.service.notification.NotificationListenerService;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.jhssong.simple_android_notification.models.FilterData;
 import com.jhssong.simple_android_notification.models.PackageData;
 
 import org.json.JSONArray;
@@ -22,6 +21,8 @@ import java.util.List;
 import java.util.Set;
 
 import io.flutter.Log;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel.Result;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class SimpleNotificationListener extends NotificationListenerService {
@@ -35,37 +36,41 @@ public class SimpleNotificationListener extends NotificationListenerService {
         this.notificationsDB = new NotificationsDB(context);
     }
 
-    public boolean hasListenerPermission() {
+    public void hasListenerPermission(Result result) {
         Set<String> notiListenerSet = NotificationManagerCompat.getEnabledListenerPackages(context);
         String myPackageName = context.getPackageName();
 
         for (String packageName : notiListenerSet) {
-            if (packageName == null) continue;
-            if (packageName.equals(myPackageName)) return true;
+            if (packageName != null && packageName.equals(myPackageName)) {
+                result.success(true);
+                return;
+            }
         }
-        return false;
+        result.success(false);
     }
 
-    public void openListenerPermissionSetting() {
+    public void openListenerPermissionSetting(Result result) {
         Intent intent = new Intent();
         intent.setAction(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+        result.success(null);
     }
 
-    public String getListenedNotifications() {
-        return notificationsDB.queryData().toString();
+    public void getListenedNotifications(Result result) {
+        result.success(notificationsDB.queryData(result).toString());
     }
 
-    public String removeListenedNotifications(String id) {
+    public void removeListenedNotifications(MethodCall call, Result result) {
+        final String id = call.argument("id");
         int stringID = Integer.parseInt(id);
         notificationsDB.deleteData(stringID);
-        return "Removed";
+        result.success(null);
     }
 
-    public String resetListenedNotifications() {
+    public void resetListenedNotifications(Result result) {
         notificationsDB.resetData();
-        return "Reset";
+        result.success(null);
     }
 
     public String addListenerFilter(String packageName) {
@@ -108,15 +113,15 @@ public class SimpleNotificationListener extends NotificationListenerService {
         return res.equals("Success") ? "Reset" : res;
     }
 
-    public String getPackageList() {
+    public void getPackageList(Result result) {
         PackageManager packageManager = context.getPackageManager();
-        List<ApplicationInfo> installedApplications  = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        List<ApplicationInfo> installedApplications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
         JSONArray list = new JSONArray();
 
-        for (ApplicationInfo appInfo : installedApplications ) {
+        for (ApplicationInfo appInfo : installedApplications) {
             PackageData data = new PackageData(appInfo, packageManager);
-            list.put(data.getAsJSON());
+            list.put(data.getAsJSON(result));
         }
-        return list.toString();
+        result.success(list.toString());
     }
 }

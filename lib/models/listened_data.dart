@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class ListenedNotificationData {
+class ListenedData {
   String id;
   String packageName;
   String title;
@@ -10,7 +10,7 @@ class ListenedNotificationData {
   String subText;
   String summaryText;
 
-  ListenedNotificationData({
+  ListenedData({
     required this.id,
     required this.packageName,
     required this.title,
@@ -21,11 +21,10 @@ class ListenedNotificationData {
     required this.summaryText,
   });
 
-  static List<ListenedNotificationData> parseJSONArrayToList(String? res) {
+  static List<ListenedData> parseJSONArrayToList(String? res) {
     List<dynamic> decodedList = json.decode(res ?? '[]');
-    List<ListenedNotificationData> listenedNotificationDataList =
-        decodedList.map((item) {
-      return ListenedNotificationData(
+    List<ListenedData> listenedNotificationDataList = decodedList.map((item) {
+      return ListenedData(
         id: item['id'],
         packageName: item['packageName'],
         title: item['title'],

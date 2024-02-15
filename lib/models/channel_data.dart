@@ -13,7 +13,16 @@ class ChannelData {
     required this.imp,
   });
 
-  static List<ChannelData> parseJSONArrayToList(String? res) {
+  static Map<String, dynamic> toMap(ChannelData data) {
+    return {
+      'id': data.id,
+      'name': data.name,
+      'desc': data.desc,
+      'imp': data.imp,
+    };
+  }
+
+  static List<ChannelData> toList(String? res) {
     List<dynamic> decodedList = json.decode(res ?? '[]');
     List<ChannelData> channelDataList = decodedList.map((item) {
       return ChannelData(

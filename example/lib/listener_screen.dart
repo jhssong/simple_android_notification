@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:simple_android_notification/models/listened_notification_data.dart';
+import 'package:simple_android_notification/models/listened_data.dart';
 
 import 'package:simple_android_notification/simple_android_notification.dart';
 import 'package:simple_android_notification_example/listener_filter_screen.dart';
@@ -15,7 +15,7 @@ class ListenerScreen extends StatefulWidget {
 }
 
 class _ListenerScreenState extends State<ListenerScreen> {
-  List<ListenedNotificationData> list = [];
+  List<ListenedData> list = [];
   @override
   void initState() {
     super.initState();
@@ -82,29 +82,19 @@ class _ListenerScreenState extends State<ListenerScreen> {
   }
 
   Future<void> getListenedNotifications() async {
-    final List<ListenedNotificationData> res =
+    final List<ListenedData> res =
         await widget.simpleAndroidNotificationPlugin.getListenedNotifications();
     setState(() => list = res);
   }
 
-  Future<void> removeListenedNotifications(
-      ListenedNotificationData listenedNotificationData) async {
-    final sm = ScaffoldMessenger.of(context);
-    final res = await widget.simpleAndroidNotificationPlugin
-        .removeListenedNotifications(listenedNotificationData);
-    sm.showSnackBar(
-      SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
-    );
+  Future<void> removeListenedNotifications(ListenedData data) async {
+    await widget.simpleAndroidNotificationPlugin
+        .removeListenedNotifications(data);
     await getListenedNotifications();
   }
 
   Future<void> resetListenedNotifications() async {
-    final sm = ScaffoldMessenger.of(context);
-    final res = await widget.simpleAndroidNotificationPlugin
-        .resetListenedNotifications();
-    sm.showSnackBar(
-      SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
-    );
+    await widget.simpleAndroidNotificationPlugin.resetListenedNotifications();
     await getListenedNotifications();
   }
 }

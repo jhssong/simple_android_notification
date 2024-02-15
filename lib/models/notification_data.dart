@@ -1,13 +1,22 @@
 class NotificationData {
-  String id;
+  String channelId;
   String title;
   String content;
   String payload;
 
   NotificationData({
-    required this.id,
+    required this.channelId,
     required this.title,
     required this.content,
     required this.payload,
   });
+
+  static Map<String, dynamic> toMap(NotificationData data) {
+    return {
+      'channelId': data.channelId,
+      'title': data.title,
+      'content': data.content,
+      'payload': data.payload,
+    };
+  }
 }

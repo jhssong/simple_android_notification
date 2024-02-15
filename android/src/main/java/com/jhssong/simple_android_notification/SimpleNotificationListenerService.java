@@ -8,7 +8,7 @@ import android.service.notification.StatusBarNotification;
 
 import androidx.annotation.RequiresApi;
 
-import com.jhssong.simple_android_notification.models.NotificationData;
+import com.jhssong.simple_android_notification.models.ListenedData;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,11 +54,10 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
         Bundle extras = sbn != null ? sbn.getNotification().extras : null;
         if (extras == null) return;
 
-        NotificationData sbnData = new NotificationData(id, packageName, extras);
+        ListenedData sbnData = new ListenedData(id, packageName, extras);
         notificationsDB.insertData(sbnData.getAsContentValues());
     }
 
     @Override
-    public void onNotificationRemoved(StatusBarNotification sbn) {
-    }
+    public void onNotificationRemoved(StatusBarNotification sbn) {}
 }

@@ -7,9 +7,8 @@ import 'package:simple_android_notification_example/widgets/info_box.dart';
 import 'package:simple_android_notification_example/widgets/input_box.dart';
 
 class ChannelScreen extends StatefulWidget {
-  final SimpleAndroidNotification simpleAndroidNotificationPlugin;
-  const ChannelScreen(
-      {super.key, required this.simpleAndroidNotificationPlugin});
+  final SimpleAndroidNotification plugin;
+  const ChannelScreen({super.key, required this.plugin});
 
   @override
   State<ChannelScreen> createState() => _ChannelScreenState();
@@ -52,7 +51,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
                       InfoBox(label: 'Name', value: list[i].name),
                       InfoBox(label: 'Description', value: list[i].desc),
                       InfoBox(
-                          label: 'Importance', value: list[i].imp.toString()),
+                        label: 'Importance',
+                        value: list[i].imp.toString(),
+                      ),
                     ],
                   ),
                   if (list[i].id != "default_channel")
@@ -131,29 +132,20 @@ class _ChannelScreenState extends State<ChannelScreen> {
     );
   }
 
-  Future<void> createNotificationChannel(ChannelData channelData) async {
+  Future<void> createNotificationChannel(ChannelData data) async {
     Navigator.pop(context);
-    final sm = ScaffoldMessenger.of(context);
-    final res = await widget.simpleAndroidNotificationPlugin
-        .createNotificationChannel(channelData);
-    sm.showSnackBar(
-      SnackBar(content: Text(res), duration: const Duration(seconds: 2)),
-    );
+    await widget.plugin.createNotificationChannel(data);
     await getNotificationChannelList();
   }
 
   Future<void> getNotificationChannelList() async {
-    final List<ChannelData> res = await widget.simpleAndroidNotificationPlugin
-        .getNotificationChannelList();
+    final List<ChannelData> res =
+        await widget.plugin.getNotificationChannelList();
     setState(() => list = res);
   }
 
-  Future<void> removeNotificationChannel(ChannelData channelData) async {
-    final sm = ScaffoldMessenger.of(context);
-    final res = await widget.simpleAndroidNotificationPlugin
-        .removeNotificationChannel(channelData);
-    sm.showSnackBar(
-        SnackBar(content: Text(res), duration: const Duration(seconds: 2)));
+  Future<void> removeNotificationChannel(ChannelData data) async {
+    await widget.plugin.removeNotificationChannel(data);
     await getNotificationChannelList();
   }
 }

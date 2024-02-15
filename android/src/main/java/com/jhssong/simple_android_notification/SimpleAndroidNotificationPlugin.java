@@ -8,8 +8,6 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.jhssong.simple_android_notification.models.ChannelData;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -39,64 +37,51 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
         Activity activity = binding.getActivity();
         this.simpleNotification = new SimpleNotification(context, activity, notificationManager);
         this.simpleNotificationListener = new SimpleNotificationListener(context);
-        // Set Default Notification Channel
-        this.simpleNotification.createNotificationChannel(Constants.DEFAULT_CHANNEL_INFO);
     }
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-        final String id = call.argument("id");
-        final String name = call.argument("name");
-        final String desc = call.argument("desc");
-        final Integer imp = call.argument("imp");
-        final String title = call.argument("title");
-        final String content = call.argument("content");
-        final String payload = call.argument("payload");
         final String packageName = call.argument("packageName");
 
         switch (call.method) {
             case "checkNotificationChannelEnabled":
-                result.success(simpleNotification.checkNotificationChannelEnabled(id));
+                simpleNotification.checkNotificationChannelEnabled(call, result);
                 break;
             case "createNotificationChannel":
-                ChannelData info = new ChannelData(id, name, desc, imp);
-                simpleNotification.createNotificationChannel(info);
-                result.success(simpleNotification.createNotificationChannel(info));
+                simpleNotification.createNotificationChannel(call, result);
                 break;
             case "getNotificationChannelList":
-                result.success(simpleNotification.getNotificationChannelList());
+                simpleNotification.getNotificationChannelList(result);
                 break;
             case "removeNotificationChannel":
-                result.success(simpleNotification.removeNotificationChannel(id));
+                simpleNotification.removeNotificationChannel(call, result);
                 break;
             case "getPayload":
-                result.success(simpleNotification.getPayload());
+                simpleNotification.getPayload(result);
                 break;
             case "hasNotificationPermission":
                 result.success(simpleNotification.hasNotificationPermission());
                 break;
             case "requestNotificationPermission":
-                simpleNotification.requestNotificationPermission();
-                result.success(null);
+                simpleNotification.requestNotificationPermission(result);
                 break;
             case "showNotification":
-                result.success(simpleNotification.showNotification(id, title, content, payload));
+                simpleNotification.showNotification(call, result);
                 break;
             case "hasListenerPermission":
-                result.success(simpleNotificationListener.hasListenerPermission());
+                simpleNotificationListener.hasListenerPermission(result);
                 break;
             case "openListenerPermissionSetting":
-                simpleNotificationListener.openListenerPermissionSetting();
-                result.success(null);
+                simpleNotificationListener.openListenerPermissionSetting(result);
                 break;
             case "getListenedNotifications":
-                result.success(simpleNotificationListener.getListenedNotifications());
+                simpleNotificationListener.getListenedNotifications(result);
                 break;
             case "removeListenedNotifications":
-                result.success(simpleNotificationListener.removeListenedNotifications(id));
+                simpleNotificationListener.removeListenedNotifications(call, result);
                 break;
             case "resetListenedNotifications":
-                result.success(simpleNotificationListener.resetListenedNotifications());
+                simpleNotificationListener.resetListenedNotifications(result);
                 break;
             case "addListenerFilter":
                 result.success(simpleNotificationListener.addListenerFilter(packageName));
@@ -111,7 +96,7 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
                 result.success(simpleNotificationListener.resetListenerFilter());
                 break;
             case "getPackageList":
-                result.success(simpleNotificationListener.getPackageList());
+                simpleNotificationListener.getPackageList(result);
                 break;
             default:
                 result.notImplemented();
@@ -120,13 +105,16 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
     }
 
     @Override
-    public void onDetachedFromActivity() {}
+    public void onDetachedFromActivity() {
+    }
 
     @Override
-    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {}
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+    }
 
     @Override
-    public void onDetachedFromActivityForConfigChanges() {}
+    public void onDetachedFromActivityForConfigChanges() {
+    }
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {

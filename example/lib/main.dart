@@ -10,7 +10,7 @@ import 'package:simple_android_notification_example/channel_screen.dart';
 import 'package:simple_android_notification_example/listener_screen.dart';
 import 'package:simple_android_notification_example/widgets/input_box.dart';
 
-final simpleAndroidNotificationPlugin = SimpleAndroidNotification();
+final plugin = SimpleAndroidNotification();
 
 void main() {
   runApp(const MaterialApp(
@@ -71,10 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ChannelScreen(
-                          simpleAndroidNotificationPlugin:
-                              simpleAndroidNotificationPlugin,
-                        )),
+                    builder: (context) => ChannelScreen(plugin: plugin)),
               );
             },
             child: const Text("Open Channel List Screen"),
@@ -129,10 +126,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ListenerScreen(
-                          simpleAndroidNotificationPlugin:
-                              simpleAndroidNotificationPlugin,
-                        )),
+                  builder: (context) =>
+                      ListenerScreen(simpleAndroidNotificationPlugin: plugin),
+                ),
               );
             },
             child: const Text("Open Listener Screen"),
@@ -143,18 +139,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getPayload() async {
-    var payload = await simpleAndroidNotificationPlugin.getPayload();
+    var payload = await plugin.getPayload();
     setState(() => _payload = payload);
   }
 
   Future<void> hasNotificationPermission() async {
-    bool permission =
-        await simpleAndroidNotificationPlugin.hasNotificationPermission();
+    bool permission = await plugin.hasNotificationPermission();
     setState(() => _notificationPermission = permission);
   }
 
   Future<void> requestNotificationPermission() async {
-    await simpleAndroidNotificationPlugin.requestNotificationPermission();
+    await plugin.requestNotificationPermission();
   }
 
   void showNotificationDialog(BuildContext context) {
@@ -200,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         var notificationData = NotificationData(
-                            id: idController.text,
+                            channelId: idController.text,
                             title: titleController.text,
                             content: contentController.text,
                             payload: payloadController.text);
@@ -223,25 +218,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> showNotification(NotificationData notificationData) async {
-    final navigator = Navigator.of(context);
-    final sm = ScaffoldMessenger.of(context);
-    final res = await simpleAndroidNotificationPlugin
-        .showNotification(notificationData);
-    if (res == "Send") {
-      navigator.pop();
-    }
-    sm.showSnackBar(
-      SnackBar(content: Text(res), duration: const Duration(seconds: 1)),
-    );
+    Navigator.of(context).pop();
+    await plugin.showNotification(notificationData);
   }
 
   Future<void> hasListenerPermission() async {
-    bool permission =
-        await simpleAndroidNotificationPlugin.hasListenerPermission();
+    bool permission = await plugin.hasListenerPermission();
     setState(() => _notificationListenerPermission = permission);
   }
 
   Future<void> openListenerPermissionSetting() async {
-    await simpleAndroidNotificationPlugin.openListenerPermissionSetting();
+    await plugin.openListenerPermissionSetting();
   }
 }

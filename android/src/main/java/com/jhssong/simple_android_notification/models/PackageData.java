@@ -1,14 +1,21 @@
 package com.jhssong.simple_android_notification.models;
 
+import static com.jhssong.simple_android_notification.ErrorHandler.handleError;
+
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.util.Log;
+import android.os.Build;
 
-import com.jhssong.simple_android_notification.Constants;
+import androidx.annotation.RequiresApi;
+
+import com.jhssong.simple_android_notification.ErrorHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.flutter.plugin.common.MethodChannel.Result;
+
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class PackageData {
     String packageName;
     String appName;
@@ -20,14 +27,15 @@ public class PackageData {
         this.isSystemApp = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
     }
 
-    public JSONObject getAsJSON() {
+
+    public JSONObject getAsJSON(Result result) {
         JSONObject data = new JSONObject();
         try {
             data.put("packageName", packageName);
             data.put("appName", appName);
             data.put("isSystemApp", isSystemApp);
         } catch (JSONException e) {
-            Log.e(Constants.LOG_TAG, e.getMessage());
+            handleError(ErrorHandler.JSON_EXCEPTION, result, e);
         }
         return data;
     }

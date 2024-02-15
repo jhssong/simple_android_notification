@@ -1,6 +1,7 @@
 package com.jhssong.simple_android_notification;
 
 import static androidx.core.app.ActivityCompat.requestPermissions;
+import static com.jhssong.simple_android_notification.ErrorHandler.handleError;
 
 import android.Manifest;
 import android.app.Activity;
@@ -18,12 +19,15 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.jhssong.simple_android_notification.models.ChannelData;
+import com.jhssong.simple_android_notification.models.NotificationData;
 
 import org.json.JSONArray;
 
 import java.util.List;
+import java.util.Map;
 
-import io.flutter.Log;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel.Result;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class SimpleNotification {
@@ -37,62 +41,53 @@ public class SimpleNotification {
         this.notificationManager = notificationManager;
     }
 
-    public boolean checkNotificationChannelEnabled(String id) {
+    public void checkNotificationChannelEnabled(MethodCall call, Result result) {
+        final String id = call.argument("id");
         NotificationChannel channel = notificationManager.getNotificationChannel(id);
-        if (channel == null) return false;
-        return channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+        if (channel == null) result.success(false);
+        else result.success(channel.getImportance() != NotificationManager.IMPORTANCE_NONE);
     }
 
-    public String createNotificationChannel(ChannelData info) {
-        if (checkNotificationChannelEnabled(info.id))
-            return "Channel already exists";
-        NotificationChannel channel = new NotificationChannel(info.id, info.name, info.imp);
-        channel.setDescription(info.desc);
+    public void createNotificationChannel(MethodCall call, Result result) {
+        Map<String, Object> arguments = call.arguments();
+        ChannelData data = ChannelData.from(arguments);
+
+        NotificationChannel channel = new NotificationChannel(data.id, data.name, data.imp);
+        channel.setDescription(data.desc);
+
         notificationManager.createNotificationChannel(channel);
-
-        boolean res = checkNotificationChannelEnabled(info.id);
-        return res ? "Created" : "Failed";
+        result.success(null);
     }
 
-    public String getNotificationChannelList() {
-        JSONArray channelArray = new JSONArray();
+    public void getNotificationChannelList(Result result) {
+        JSONArray array = new JSONArray();
         List<NotificationChannel> channels = notificationManager.getNotificationChannels();
 
         for (NotificationChannel channel : channels) {
-            ChannelData info = new ChannelData(channel);
-            channelArray.put(info.getAsJSON());
+            ChannelData data = new ChannelData(channel);
+            array.put(data.getAsJSON(result));
         }
-        return channelArray.toString();
+        result.success(array.toString());
     }
 
-    public String removeNotificationChannel(String id) {
-        if (!checkNotificationChannelEnabled(id))
-            return "Channel doesn't exists";
+    public void removeNotificationChannel(MethodCall call, Result result) {
+        final String id = call.argument("id");
         notificationManager.deleteNotificationChannel(id);
-        boolean res = checkNotificationChannelEnabled(id);
-        return !res ? "Deleted" : "Failed";
+        result.success(null);
     }
 
-    public String getPayload() {
+    public void getPayload(Result result) {
         Intent activityIntent = activity.getIntent();
-        String payload = null;
-
         if (activityIntent != null) {
             Bundle extras = activityIntent.getExtras();
             if (extras != null && extras.containsKey(Constants.NOTIFICATION_PAYLOAD_KEY)) {
-                payload = extras.getString(Constants.NOTIFICATION_PAYLOAD_KEY);
+                String payload = extras.getString(Constants.NOTIFICATION_PAYLOAD_KEY);
+                result.success(payload);
             } else {
-                payload = "empty";
-                // if (extras != null) {
-                //     for (String key : extras.keySet()) {
-                //         Object value = extras.get(key);
-                //         String valueString = value != null ? value.toString() : null;
-                //         Log.d(Constants.LOG_TAG, "Key: " + key + ", Value: " + valueString);
-                //     }
-                // }
+                result.success("empty");
             }
         }
-        return payload;
+        else result.success("error with activityIntent");
     }
 
     // TODO Fix function to work under Ver.TIRAMISU
@@ -105,41 +100,40 @@ public class SimpleNotification {
     }
 
     // TODO Fix function to work under Ver.TIRAMISU
-    public void requestNotificationPermission() {
+    public void requestNotificationPermission(Result result) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             requestPermissions(activity, new String[]{Manifest.permission.POST_NOTIFICATIONS},
                     Constants.NOTIFICATION_PERMISSIONS_REQUEST_CODE);
+        result.success(null);
     }
 
-    public Intent getLaunchIntent(Context context) {
-        String packageName = context.getPackageName();
-        PackageManager packageManager = context.getPackageManager();
-        return packageManager.getLaunchIntentForPackage(packageName);
-    }
 
-    public String showNotification(String channelId, String title, String content, String payload) {
-        if (!hasNotificationPermission())
-            return "Doesn't have permission";
-        if (!checkNotificationChannelEnabled(channelId))
-            return "Unknown channel";
-        Intent intent = getLaunchIntent(context);
-        intent.putExtra(Constants.NOTIFICATION_PAYLOAD_KEY, payload);
-        intent.setAction(payload);
+    public void showNotification(MethodCall call, Result result) {
+        Map<String, Object> arguments = call.arguments();
+        NotificationData data = NotificationData.from(arguments);
+
+        Intent intent = getLaunchIntent();
+        intent.putExtra(Constants.NOTIFICATION_PAYLOAD_KEY, data.payload);
+        intent.setAction(data.payload);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context, Constants.NOTIFICATION_PENDING_INTENT_REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, data.channelId)
                 .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle(title).setContentText(content)
+                .setContentTitle(data.title).setContentText(data.content)
                 .setContentIntent(pendingIntent).setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         try {
             notificationManager.notify(Constants.NOTIFICATION_NOTIFY_CODE, builder.build());
+            result.success(null);
         } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, e.getMessage());
-            return "Error when notify";
+            handleError(ErrorHandler.NOTIFY_FAILED, result, null);
         }
-        return "Send";
+    }
+
+    private Intent getLaunchIntent() {
+        String packageName = context.getPackageName();
+        PackageManager packageManager = context.getPackageManager();
+        return packageManager.getLaunchIntentForPackage(packageName);
     }
 }
