@@ -2,7 +2,6 @@ package com.jhssong.simple_android_notification.models;
 
 import java.util.Map;
 
-
 public class NotificationData {
     public String channelId;
     public CharSequence title;

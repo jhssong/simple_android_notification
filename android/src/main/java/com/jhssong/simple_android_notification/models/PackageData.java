@@ -4,9 +4,6 @@ import static com.jhssong.simple_android_notification.ErrorHandler.handleError;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import com.jhssong.simple_android_notification.ErrorHandler;
 
@@ -15,7 +12,6 @@ import org.json.JSONObject;
 
 import io.flutter.plugin.common.MethodChannel.Result;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class PackageData {
     String packageName;
     String appName;

@@ -2,16 +2,10 @@ package com.jhssong.simple_android_notification.models;
 
 import android.app.Notification;
 import android.content.ContentValues;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-
-import com.jhssong.simple_android_notification.Constants;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class ListenedData {
-    String id;
     String packageName;
     String extraTitle;
     String extraText;
@@ -20,12 +14,13 @@ public class ListenedData {
     String extraSubText;
     String extraSummaryText;
 
-    public ListenedData(String id, String packageName, Bundle extras) {
-        this.id = id;
+    public ListenedData(String packageName, Bundle extras) {
         this.packageName = packageName;
         this.extraTitle = extras.getString(Notification.EXTRA_TITLE, "");
         this.extraText = extras.getString(Notification.EXTRA_TEXT, "");
-        this.extraBigText = extras.getString(Notification.EXTRA_BIG_TEXT, "");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            this.extraBigText = extras.getString(Notification.EXTRA_BIG_TEXT, "");
+        else this.extraBigText = "";
         this.extraInfoText = extras.getString(Notification.EXTRA_INFO_TEXT, "");
         this.extraSubText = extras.getString(Notification.EXTRA_SUB_TEXT, "");
         this.extraSummaryText = extras.getString(Notification.EXTRA_SUMMARY_TEXT, "");

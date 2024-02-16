@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 // TODO Handle exception using logging tool
+
 public class SharedPref {
     private final Context context;
 

@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class FilterData {
-    int option; // 0: and, 1: or
+    int option; // 0: all, 1: and, 2: or
     String packageName;
     String title;
     String text;

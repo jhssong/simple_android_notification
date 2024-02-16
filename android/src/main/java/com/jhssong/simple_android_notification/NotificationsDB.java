@@ -6,9 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +13,6 @@ import org.json.JSONObject;
 
 import io.flutter.plugin.common.MethodChannel.Result;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class NotificationsDB {
     private final SQLiteDatabase db;
     Context context;

@@ -14,7 +14,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
@@ -29,7 +28,6 @@ import java.util.Map;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel.Result;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class SimpleNotification {
     private final Context context;
     private final Activity activity;
@@ -42,37 +40,46 @@ public class SimpleNotification {
     }
 
     public void checkNotificationChannelEnabled(MethodCall call, Result result) {
-        final String id = call.argument("id");
-        NotificationChannel channel = notificationManager.getNotificationChannel(id);
-        if (channel == null) result.success(false);
-        else result.success(channel.getImportance() != NotificationManager.IMPORTANCE_NONE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            final String id = call.argument("id");
+            NotificationChannel channel = notificationManager.getNotificationChannel(id);
+            if (channel == null) result.success(false);
+            else result.success(channel.getImportance() != NotificationManager.IMPORTANCE_NONE);
+        } else result.success(true);
     }
 
     public void createNotificationChannel(MethodCall call, Result result) {
-        Map<String, Object> arguments = call.arguments();
-        ChannelData data = ChannelData.from(arguments);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            Map<String, Object> arguments = call.arguments();
+            ChannelData data = ChannelData.from(arguments);
 
-        NotificationChannel channel = new NotificationChannel(data.id, data.name, data.imp);
-        channel.setDescription(data.desc);
+            NotificationChannel channel = new NotificationChannel(data.id, data.name, data.imp);
+            channel.setDescription(data.desc);
 
-        notificationManager.createNotificationChannel(channel);
+            notificationManager.createNotificationChannel(channel);
+        }
         result.success(null);
+
     }
 
     public void getNotificationChannelList(Result result) {
         JSONArray array = new JSONArray();
-        List<NotificationChannel> channels = notificationManager.getNotificationChannels();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            List<NotificationChannel> channels = notificationManager.getNotificationChannels();
 
-        for (NotificationChannel channel : channels) {
-            ChannelData data = new ChannelData(channel);
-            array.put(data.getAsJSON(result));
+            for (NotificationChannel channel : channels) {
+                ChannelData data = new ChannelData(channel);
+                array.put(data.getAsJSON(result));
+            }
         }
         result.success(array.toString());
     }
 
     public void removeNotificationChannel(MethodCall call, Result result) {
-        final String id = call.argument("id");
-        notificationManager.deleteNotificationChannel(id);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            final String id = call.argument("id");
+            notificationManager.deleteNotificationChannel(id);
+        }
         result.success(null);
     }
 
@@ -86,17 +93,15 @@ public class SimpleNotification {
             } else {
                 result.success("empty");
             }
-        }
-        else result.success("error with activityIntent");
+        } else result.success("error with activityIntent");
     }
 
     // TODO Fix function to work under Ver.TIRAMISU
-    public boolean hasNotificationPermission() {
+    public void hasNotificationPermission(Result result) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             int check = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS);
-            return check == PackageManager.PERMISSION_GRANTED;
-        }
-        return true;
+            result.success(check == PackageManager.PERMISSION_GRANTED);
+        } else result.success(true);
     }
 
     // TODO Fix function to work under Ver.TIRAMISU

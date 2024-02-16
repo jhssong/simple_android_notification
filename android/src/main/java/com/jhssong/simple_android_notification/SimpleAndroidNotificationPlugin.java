@@ -3,10 +3,8 @@ package com.jhssong.simple_android_notification;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -16,7 +14,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
     private Context context;
     private MethodChannel channel;
@@ -60,7 +57,7 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
                 simpleNotification.getPayload(result);
                 break;
             case "hasNotificationPermission":
-                result.success(simpleNotification.hasNotificationPermission());
+                simpleNotification.hasNotificationPermission(result);
                 break;
             case "requestNotificationPermission":
                 simpleNotification.requestNotificationPermission(result);

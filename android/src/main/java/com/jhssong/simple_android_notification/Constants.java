@@ -1,12 +1,5 @@
 package com.jhssong.simple_android_notification;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
-import com.jhssong.simple_android_notification.models.ChannelData;
-
-@RequiresApi(api = Build.VERSION_CODES.O)
 public final class Constants {
     public static final String METHOD_CHANNEL = "jhssong/simple_android_notification";
     public static final String LOG_TAG = "simple_notification";
@@ -21,7 +14,7 @@ public final class Constants {
     public static final String NOTIFICATION_DB_NAME = "simple_android_notification.db";
     public static final String NOTIFICATION_DB_TABLE_NAME = "listened_notifications";
     public static final String NOTIFICATION_DB_CREATE = "" +
-            "CREATE TABLE IF NOT EXISTS "+ NOTIFICATION_DB_TABLE_NAME +
+            "CREATE TABLE IF NOT EXISTS " + NOTIFICATION_DB_TABLE_NAME +
             "(id INTEGER PRIMARY KEY, packageName TEXT, title TEXT, " +
             "text TEXT, bigText TEXT, infoText TEXT, subText TEXT, summaryText TEXT)";
     public static final String NOTIFICATION_DB_QUERY = "SELECT * FROM " + NOTIFICATION_DB_TABLE_NAME;

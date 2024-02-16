@@ -1,12 +1,9 @@
 package com.jhssong.simple_android_notification;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-
-import androidx.annotation.RequiresApi;
 
 import com.jhssong.simple_android_notification.models.ListenedData;
 
@@ -14,11 +11,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.Instant;
-
 import io.flutter.Log;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
+
 public class SimpleNotificationListenerService extends NotificationListenerService {
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
@@ -28,7 +23,6 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
         NotificationsDB notificationsDB = new NotificationsDB(context);
         SimpleNotificationListener simpleNotificationListener = new SimpleNotificationListener(context);
 
-        String id = Long.toString(Instant.now().toEpochMilli());
         String packageName = sbn != null ? sbn.getPackageName() : "Null";
 
         String filterString = simpleNotificationListener.getListenerFilter();
@@ -54,10 +48,11 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
         Bundle extras = sbn != null ? sbn.getNotification().extras : null;
         if (extras == null) return;
 
-        ListenedData sbnData = new ListenedData(id, packageName, extras);
+        ListenedData sbnData = new ListenedData(packageName, extras);
         notificationsDB.insertData(sbnData.getAsContentValues());
     }
 
     @Override
-    public void onNotificationRemoved(StatusBarNotification sbn) {}
+    public void onNotificationRemoved(StatusBarNotification sbn) {
+    }
 }
