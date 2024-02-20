@@ -15,10 +15,8 @@ import io.flutter.plugin.common.MethodChannel.Result;
 
 public class NotificationsDB {
     private final SQLiteDatabase db;
-    Context context;
 
     public NotificationsDB(Context context) {
-        this.context = context;
         db = context.openOrCreateDatabase(Constants.NOTIFICATION_DB_NAME, Context.MODE_PRIVATE, null);
         createTable();
     }
@@ -27,6 +25,7 @@ public class NotificationsDB {
         db.execSQL(Constants.NOTIFICATION_DB_CREATE);
     }
 
+    // TODO Need a duplication check
     public void insertData(ContentValues values) {
         db.insert(Constants.NOTIFICATION_DB_TABLE_NAME, null, values);
     }

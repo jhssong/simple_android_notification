@@ -13,7 +13,7 @@ class ChannelData {
     required this.imp,
   });
 
-  static Map<String, dynamic> toMap(ChannelData data) {
+  static Map<String, dynamic> toJson(ChannelData data) {
     return {
       'id': data.id,
       'name': data.name,

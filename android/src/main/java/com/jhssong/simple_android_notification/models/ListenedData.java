@@ -6,13 +6,13 @@ import android.os.Build;
 import android.os.Bundle;
 
 public class ListenedData {
-    String packageName;
-    String extraTitle;
-    String extraText;
-    String extraBigText;
-    String extraInfoText;
-    String extraSubText;
-    String extraSummaryText;
+    public final String packageName;
+    public final String extraTitle;
+    public final String extraText;
+    public final String extraBigText;
+    public final String extraInfoText;
+    public final String extraSubText;
+    public final String extraSummaryText;
 
     public ListenedData(String packageName, Bundle extras) {
         this.packageName = packageName;

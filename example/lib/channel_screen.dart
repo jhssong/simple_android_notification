@@ -47,7 +47,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      InfoBox(label: 'Id', value: list[i].id),
+                      InfoBox(label: 'ID', value: list[i].id),
                       InfoBox(label: 'Name', value: list[i].name),
                       InfoBox(label: 'Description', value: list[i].desc),
                       InfoBox(
@@ -115,6 +115,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           imp: int.parse(impController.text),
                         );
                         createNotificationChannel(channelData);
+                        Navigator.pop(context);
                       }
                     },
                     child: const Text("Create Channel"),
@@ -133,7 +134,6 @@ class _ChannelScreenState extends State<ChannelScreen> {
   }
 
   Future<void> createNotificationChannel(ChannelData data) async {
-    Navigator.pop(context);
     await widget.plugin.createNotificationChannel(data);
     await getNotificationChannelList();
   }

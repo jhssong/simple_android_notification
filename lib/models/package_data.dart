@@ -11,7 +11,7 @@ class PackageData {
     required this.isSystemApp,
   });
 
-  static List<PackageData> parseJSONArrayToList(String? res) {
+  static List<PackageData> toList(String? res) {
     List<dynamic> decodedList = json.decode(res ?? '[]');
     List<PackageData> packageDataList = decodedList.map((item) {
       return PackageData(

@@ -59,7 +59,6 @@ public class SimpleNotification {
             notificationManager.createNotificationChannel(channel);
         }
         result.success(null);
-
     }
 
     public void getNotificationChannelList(Result result) {
@@ -111,7 +110,6 @@ public class SimpleNotification {
                     Constants.NOTIFICATION_PERMISSIONS_REQUEST_CODE);
         result.success(null);
     }
-
 
     public void showNotification(MethodCall call, Result result) {
         Map<String, Object> arguments = call.arguments();

@@ -13,16 +13,17 @@ import org.json.JSONObject;
 import io.flutter.plugin.common.MethodChannel.Result;
 
 public class PackageData {
-    String packageName;
-    String appName;
-    boolean isSystemApp;
+    private final String packageName;
+    private final String appName;
+    private final boolean isSystemApp;
 
     public PackageData(ApplicationInfo appInfo, PackageManager packageManager) {
         this.packageName = appInfo.packageName;
         this.appName = appInfo.loadLabel(packageManager).toString();
-        this.isSystemApp = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+        // TODO Figure out real system apps
+        //this.isSystemApp = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+        this.isSystemApp = packageManager.getLaunchIntentForPackage(appInfo.packageName) == null;
     }
-
 
     public JSONObject getAsJSON(Result result) {
         JSONObject data = new JSONObject();

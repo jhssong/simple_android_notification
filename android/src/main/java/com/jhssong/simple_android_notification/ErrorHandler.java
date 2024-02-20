@@ -7,6 +7,7 @@ public enum ErrorHandler {
     JSON_EXCEPTION("1002", "Failed to add item to JsonArray"),
     NOTIFY_FAILED("3001", "Failed to send notifications");
 
+
     private final String code;
     private final String reason;
 
@@ -18,14 +19,19 @@ public enum ErrorHandler {
     public static void handleError(ErrorHandler code, Result result, Exception e) {
         if (e != null)
             Log.e(Constants.LOG_TAG, e.getMessage());
-        result.error(code.getCode(), code.getMsg(), null);
+        if (result != null)
+            result.error(code.getCode(), code.getMsg(), null);
+        else
+            Log.e(Constants.LOG_TAG, code.getMsg());
+        e.printStackTrace();
+
     }
 
-    public String getCode() {
+    private String getCode() {
         return code;
     }
 
-    public String getMsg() {
+    private String getMsg() {
         return reason;
     }
 }

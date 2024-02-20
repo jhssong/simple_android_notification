@@ -1,6 +1,6 @@
 name: simple_android_notification
-description: "simple android notification manager"
-version: 0.0.2
+description: An android plugin for show notifications and listen notifications from other apps
+version: 0.0.3
 repository: https://github.com/jhssong/simple_android_notification
 
 environment:

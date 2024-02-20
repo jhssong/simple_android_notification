@@ -11,7 +11,7 @@ class NotificationData {
     required this.payload,
   });
 
-  static Map<String, dynamic> toMap(NotificationData data) {
+  static Map<String, dynamic> toJson(NotificationData data) {
     return {
       'channelId': data.channelId,
       'title': data.title,

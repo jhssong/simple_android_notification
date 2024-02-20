@@ -6,30 +6,31 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.core.app.NotificationManagerCompat;
 
+import com.jhssong.simple_android_notification.models.FilterData;
 import com.jhssong.simple_android_notification.models.PackageData;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import io.flutter.Log;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel.Result;
 
-public class SimpleNotificationListener  {
+public class SimpleNotificationListener {
     private final Context context;
-    private final SharedPref sPref;
+    private final ListenerFilters listenerFilters;
     private final NotificationsDB notificationsDB;
 
     SimpleNotificationListener(Context context) {
         this.context = context;
-        this.sPref = new SharedPref(context);
+        this.listenerFilters = new ListenerFilters(context);
         this.notificationsDB = new NotificationsDB(context);
     }
 
@@ -67,49 +68,39 @@ public class SimpleNotificationListener  {
         result.success(null);
     }
 
+    // TODO Add reset package filter function
+
     public void resetListenedNotifications(Result result) {
         notificationsDB.resetData();
         result.success(null);
     }
 
-    public String addListenerFilter(String packageName) {
-        JSONObject new_item = new JSONObject();
-        try {
-            new_item.put("packageName", packageName);
-        } catch (JSONException e) {
-            Log.e(Constants.LOG_TAG, e.getMessage());
-            return "Failed";
-        }
-        final String res = sPref.addPref(Constants.LISTENER_FILTER_KEY, new_item);
-        return res.equals("Success") ? "Added" : res;
+    public void addListenerFilter(MethodCall call, Result result) {
+        Map<String, Object> arguments = call.arguments();
+        FilterData item = FilterData.from(arguments);
+        listenerFilters.insertData(item.getAsJSON(result), result);
+        result.success(null);
     }
 
-    public String getListenerFilter() {
-        JSONArray listenerFilterList = sPref.getPref(Constants.LISTENER_FILTER_KEY);
-        return listenerFilterList.toString();
+    public void getListenerFilterList(Result result) {
+        JSONObject listenerFilterList = listenerFilters.queryData(result);
+        result.success(listenerFilterList.toString());
     }
 
-    public String removeListenerFilter(String packageName) {
-        JSONArray old_array = sPref.getPref(Constants.LISTENER_FILTER_KEY);
-        JSONArray new_array = new JSONArray();
-
-        for (int i = 0; i < old_array.length(); i++) {
-            try {
-                JSONObject element = old_array.getJSONObject(i);
-                if (packageName.equals(element.getString("packageName"))) continue;
-                new_array.put(element);
-            } catch (JSONException e) {
-                Log.e(Constants.LOG_TAG, e.getMessage());
-                return "Failed";
-            }
-        }
-        final String res = sPref.setPref(Constants.LISTENER_FILTER_KEY, new_array);
-        return res.equals("Success") ? "Removed" : res;
+    public JSONArray getListenerFilter(String packageName) {
+        return listenerFilters.queryPackageData(packageName);
     }
 
-    public String resetListenerFilter() {
-        final String res = sPref.setPref(Constants.LISTENER_FILTER_KEY, new JSONArray());
-        return res.equals("Success") ? "Reset" : res;
+    public void removeListenerFilter(MethodCall call, Result result) {
+        Map<String, Object> arguments = call.arguments();
+        FilterData item = FilterData.from(arguments);
+        listenerFilters.deleteData(item.getAsJSON(result), result);
+        result.success(null);
+    }
+
+    public void resetListenerFilter(Result result) {
+        listenerFilters.resetData();
+        result.success(null);
     }
 
     public void getPackageList(Result result) {

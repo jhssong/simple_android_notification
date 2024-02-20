@@ -1,10 +1,10 @@
 // ignore_for_file: constant_identifier_names
 
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:simple_android_notification/models/channel_data.dart';
+import 'package:simple_android_notification/models/filter_data.dart';
 import 'package:simple_android_notification/models/listened_data.dart';
 import 'package:simple_android_notification/models/notification_data.dart';
 import 'package:simple_android_notification/models/package_data.dart';
@@ -17,7 +17,8 @@ enum ErrorCode {
   UNKNOWN,
   CHANNEL_DUPLICATE,
   CHANNEL_NON_EXISTS,
-  NOTIFY_FAILED
+  NOTIFY_FAILED,
+  FILTER_DUPLICATE,
 }
 
 String getErrorCode(ErrorCode code) {
@@ -34,6 +35,8 @@ String getErrorCode(ErrorCode code) {
       return "2002";
     case ErrorCode.NOTIFY_FAILED:
       return "3001";
+    case ErrorCode.FILTER_DUPLICATE:
+      return "4001";
     default:
       return "1001";
   }
@@ -53,6 +56,8 @@ String getErrorMsg(ErrorCode code) {
       return "Channel doesn't exists";
     case ErrorCode.NOTIFY_FAILED:
       return "Failed to send notifications";
+    case ErrorCode.FILTER_DUPLICATE:
+      return "Filter already exists";
     default:
       return "1001";
   }
@@ -65,7 +70,7 @@ class SimpleAndroidNotification {
       res = await _channel
           .invokeMethod('checkNotificationChannelEnabled', {'id': data.id});
     } on PlatformException catch (e) {
-      log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }
     return res ?? false;
   }
@@ -77,9 +82,9 @@ class SimpleAndroidNotification {
     }
     try {
       await _channel.invokeMethod(
-          'createNotificationChannel', ChannelData.toMap(data));
+          'createNotificationChannel', ChannelData.toJson(data));
     } on PlatformException catch (e) {
-      log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }
   }
 
@@ -89,9 +94,9 @@ class SimpleAndroidNotification {
       res = await _channel.invokeMethod('getNotificationChannelList');
     } on PlatformException catch (e) {
       if (e.code == getErrorCode(ErrorCode.CHANNEL_DUPLICATE)) {
-        log(getErrorMsg(ErrorCode.NOTIFY_FAILED) + (e.message ?? "null"));
+        log("${getErrorMsg(ErrorCode.NOTIFY_FAILED)} ${e.message ?? "null"}");
       } else {
-        log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+        log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
       }
     }
     return ChannelData.toList(res);
@@ -105,7 +110,7 @@ class SimpleAndroidNotification {
     try {
       await _channel.invokeMethod('removeNotificationChannel', {'id': data.id});
     } on PlatformException catch (e) {
-      log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }
   }
 
@@ -114,7 +119,7 @@ class SimpleAndroidNotification {
     try {
       res = await _channel.invokeMethod('getPayload');
     } on PlatformException catch (e) {
-      log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }
     return res ?? "error with invokeMethod";
   }
@@ -124,7 +129,7 @@ class SimpleAndroidNotification {
     try {
       res = await _channel.invokeMethod('hasNotificationPermission');
     } on PlatformException catch (e) {
-      log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }
     return res ?? false;
   }
@@ -133,7 +138,7 @@ class SimpleAndroidNotification {
     try {
       await _channel.invokeMethod('requestNotificationPermission');
     } on PlatformException catch (e) {
-      log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }
   }
 
@@ -152,12 +157,12 @@ class SimpleAndroidNotification {
 
     try {
       await _channel.invokeMethod(
-          'showNotification', NotificationData.toMap(data));
+          'showNotification', NotificationData.toJson(data));
     } on PlatformException catch (e) {
       if (e.code == getErrorCode(ErrorCode.CHANNEL_DUPLICATE)) {
-        log(getErrorMsg(ErrorCode.NOTIFY_FAILED) + (e.message ?? "null"));
+        log("${getErrorMsg(ErrorCode.NOTIFY_FAILED)} ${e.message ?? "null"}");
       } else {
-        log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+        log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
       }
     }
   }
@@ -167,7 +172,7 @@ class SimpleAndroidNotification {
     try {
       res = await _channel.invokeMethod('hasListenerPermission');
     } on PlatformException catch (e) {
-      log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }
     return res ?? false;
   }
@@ -176,7 +181,7 @@ class SimpleAndroidNotification {
     try {
       await _channel.invokeMethod('openListenerPermissionSetting');
     } on PlatformException catch (e) {
-      log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }
   }
 
@@ -186,12 +191,12 @@ class SimpleAndroidNotification {
       res = await _channel.invokeMethod('getListenedNotifications');
     } on PlatformException catch (e) {
       if (e.code == getErrorCode(ErrorCode.JSON_EXCEPTION)) {
-        log(getErrorMsg(ErrorCode.JSON_EXCEPTION) + (e.message ?? "null"));
+        log("${getErrorMsg(ErrorCode.JSON_EXCEPTION)} ${e.message ?? "null"}");
       } else {
-        log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+        log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
       }
     }
-    return ListenedData.parseJSONArrayToList(res);
+    return ListenedData.toList(res);
   }
 
   Future<void> removeListenedNotifications(ListenedData data) async {
@@ -199,7 +204,7 @@ class SimpleAndroidNotification {
       await _channel
           .invokeMethod('removeListenedNotifications', {'id': data.id});
     } on PlatformException catch (e) {
-      log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }
   }
 
@@ -207,30 +212,64 @@ class SimpleAndroidNotification {
     try {
       await _channel.invokeMethod('resetListenedNotifications');
     } on PlatformException catch (e) {
-      log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }
   }
 
-  Future<String> addListenerFilter(String packageName) async {
-    final String? res = await _channel
-        .invokeMethod('addListenerFilter', {'packageName': packageName});
-    return res ?? "Error";
+  Future<void> addListenerFilter(FilterData data) async {
+    Map<String, List<FilterData>> list = await getListenerFilter();
+    if (list[data.packageName] != null) {
+      for (var item in list[data.packageName]!) {
+        if (item.id == data.id) {
+          log(getErrorMsg(ErrorCode.FILTER_DUPLICATE));
+          return;
+        }
+      }
+    }
+    try {
+      await _channel.invokeMethod('addListenerFilter', FilterData.toJson(data));
+    } on PlatformException catch (e) {
+      if (e.code == getErrorCode(ErrorCode.JSON_EXCEPTION)) {
+        log("${getErrorMsg(ErrorCode.JSON_EXCEPTION)} ${e.message ?? "null"}");
+      } else {
+        log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
+      }
+    }
   }
 
-  Future<List<dynamic>> getListenerFilter() async {
-    final String? res = await _channel.invokeMethod('getListenerFilter');
-    return json.decode(res ?? '[]');
+  Future<Map<String, List<FilterData>>> getListenerFilter() async {
+    String? res;
+    try {
+      res = await _channel.invokeMethod('getListenerFilter');
+    } on PlatformException catch (e) {
+      if (e.code == getErrorCode(ErrorCode.JSON_EXCEPTION)) {
+        log("${getErrorMsg(ErrorCode.JSON_EXCEPTION)} ${e.message ?? "nu  ll"}");
+      } else {
+        log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
+      }
+    }
+    return FilterData.toMapData(res);
   }
 
-  Future<String> removeListenerFilter(String packageName) async {
-    final String? res = await _channel
-        .invokeMethod('removeListenerFilter', {'packageName': packageName});
-    return res ?? "Error";
+  Future<void> removeListenerFilter(FilterData data) async {
+    try {
+      await _channel.invokeMethod(
+          'removeListenerFilter', FilterData.toJson(data));
+    } on PlatformException catch (e) {
+      if (e.code == getErrorCode(ErrorCode.JSON_EXCEPTION)) {
+        log("${getErrorMsg(ErrorCode.JSON_EXCEPTION)} ${e.message ?? "null"}");
+      } else {
+        log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
+      }
+    }
   }
 
-  Future<String> resetListenerFilter() async {
-    final String? res = await _channel.invokeMethod('resetListenerFilter');
-    return res ?? "Error";
+  Future<void> resetListenerFilter() async {
+    try {
+      await _channel.invokeMethod('resetListenerFilter');
+    } on PlatformException catch (e) {
+      log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
+    }
   }
 
   Future<List<PackageData>> getPackageList() async {
@@ -239,11 +278,11 @@ class SimpleAndroidNotification {
       res = await _channel.invokeMethod('getPackageList');
     } on PlatformException catch (e) {
       if (e.code == getErrorCode(ErrorCode.JSON_EXCEPTION)) {
-        log(getErrorMsg(ErrorCode.JSON_EXCEPTION) + (e.message ?? "null"));
+        log("${getErrorMsg(ErrorCode.JSON_EXCEPTION)} ${e.message ?? "null"}");
       } else {
-        log(getErrorMsg(ErrorCode.UNKNOWN) + (e.message ?? "null"));
+        log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
       }
     }
-    return PackageData.parseJSONArrayToList(res);
+    return PackageData.toList(res);
   }
 }

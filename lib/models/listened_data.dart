@@ -21,7 +21,7 @@ class ListenedData {
     required this.summaryText,
   });
 
-  static List<ListenedData> parseJSONArrayToList(String? res) {
+  static List<ListenedData> toList(String? res) {
     List<dynamic> decodedList = json.decode(res ?? '[]');
     List<ListenedData> listenedNotificationDataList = decodedList.map((item) {
       return ListenedData(

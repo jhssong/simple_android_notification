@@ -6,9 +6,8 @@ import 'package:simple_android_notification_example/listener_filter_screen.dart'
 import 'package:simple_android_notification_example/widgets/info_box.dart';
 
 class ListenerScreen extends StatefulWidget {
-  final SimpleAndroidNotification simpleAndroidNotificationPlugin;
-  const ListenerScreen(
-      {super.key, required this.simpleAndroidNotificationPlugin});
+  final SimpleAndroidNotification plugin;
+  const ListenerScreen({super.key, required this.plugin});
 
   @override
   State<ListenerScreen> createState() => _ListenerScreenState();
@@ -34,8 +33,7 @@ class _ListenerScreenState extends State<ListenerScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ListenerFilterScreen(
-                          simpleAndroidNotificationPlugin:
-                              widget.simpleAndroidNotificationPlugin,
+                          plugin: widget.plugin,
                         )),
               );
             },
@@ -83,18 +81,17 @@ class _ListenerScreenState extends State<ListenerScreen> {
 
   Future<void> getListenedNotifications() async {
     final List<ListenedData> res =
-        await widget.simpleAndroidNotificationPlugin.getListenedNotifications();
+        await widget.plugin.getListenedNotifications();
     setState(() => list = res);
   }
 
   Future<void> removeListenedNotifications(ListenedData data) async {
-    await widget.simpleAndroidNotificationPlugin
-        .removeListenedNotifications(data);
+    await widget.plugin.removeListenedNotifications(data);
     await getListenedNotifications();
   }
 
   Future<void> resetListenedNotifications() async {
-    await widget.simpleAndroidNotificationPlugin.resetListenedNotifications();
+    await widget.plugin.resetListenedNotifications();
     await getListenedNotifications();
   }
 }

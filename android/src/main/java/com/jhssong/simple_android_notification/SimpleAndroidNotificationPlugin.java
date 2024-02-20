@@ -38,8 +38,6 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-        final String packageName = call.argument("packageName");
-
         switch (call.method) {
             case "checkNotificationChannelEnabled":
                 simpleNotification.checkNotificationChannelEnabled(call, result);
@@ -81,16 +79,16 @@ public class SimpleAndroidNotificationPlugin implements FlutterPlugin, MethodCal
                 simpleNotificationListener.resetListenedNotifications(result);
                 break;
             case "addListenerFilter":
-                result.success(simpleNotificationListener.addListenerFilter(packageName));
+                simpleNotificationListener.addListenerFilter(call, result);
                 break;
             case "getListenerFilter":
-                result.success(simpleNotificationListener.getListenerFilter());
+                simpleNotificationListener.getListenerFilterList(result);
                 break;
             case "removeListenerFilter":
-                result.success(simpleNotificationListener.removeListenerFilter(packageName));
+                simpleNotificationListener.removeListenerFilter(call, result);
                 break;
             case "resetListenerFilter":
-                result.success(simpleNotificationListener.resetListenerFilter());
+                simpleNotificationListener.resetListenerFilter(result);
                 break;
             case "getPackageList":
                 simpleNotificationListener.getPackageList(result);
