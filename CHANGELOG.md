@@ -9,3 +9,7 @@
 ## 0.0.3
 
 - Add listener filters filtered by notification extra data
+
+## 0.0.4
+
+- Add datetime to listenedData

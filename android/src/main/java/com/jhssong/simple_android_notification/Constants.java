@@ -15,7 +15,7 @@ public final class Constants {
     public static final String NOTIFICATION_DB_TABLE_NAME = "listened_notifications";
     public static final String NOTIFICATION_DB_CREATE = "" +
             "CREATE TABLE IF NOT EXISTS " + NOTIFICATION_DB_TABLE_NAME +
-            "(id INTEGER PRIMARY KEY, packageName TEXT, title TEXT, " +
+            "(id INTEGER PRIMARY KEY, datetime TEXT, packageName TEXT, title TEXT, " +
             "text TEXT, bigText TEXT, infoText TEXT, subText TEXT, summaryText TEXT)";
     public static final String NOTIFICATION_DB_QUERY = "SELECT * FROM " + NOTIFICATION_DB_TABLE_NAME;
     public static final String NOTIFICATION_DB_RESET = "DELETE FROM " + NOTIFICATION_DB_TABLE_NAME;

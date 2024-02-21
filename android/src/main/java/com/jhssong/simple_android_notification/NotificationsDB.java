@@ -37,6 +37,7 @@ public class NotificationsDB {
             if (cursor == null || !cursor.moveToFirst()) return jsonArray;
 
             int idIndex = cursor.getColumnIndex("id");
+            int datetimeIndex = cursor.getColumnIndex("datetime");
             int packageNameIndex = cursor.getColumnIndex("packageName");
             int titleIndex = cursor.getColumnIndex("title");
             int textIndex = cursor.getColumnIndex("text");
@@ -48,6 +49,7 @@ public class NotificationsDB {
             do {
                 JSONObject jsonObject = new JSONObject();
                 if (idIndex != -1) jsonObject.put("id", Integer.toString(cursor.getInt(idIndex)));
+                if (datetimeIndex != -1) jsonObject.put("datetime", cursor.getString(datetimeIndex));
                 if (packageNameIndex != -1)
                     jsonObject.put("packageName", cursor.getString(packageNameIndex));
                 if (titleIndex != -1) jsonObject.put("title", cursor.getString(titleIndex));

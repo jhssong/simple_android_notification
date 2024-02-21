@@ -1,6 +1,6 @@
 name: simple_android_notification
 description: An android plugin for show notifications and listen notifications from other apps
-version: 0.0.3
+version: 0.0.4
 repository: https://github.com/jhssong/simple_android_notification
 
 environment:
@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.0.2
+  # plugin_platform_interface: ^2.0.2
 
 dev_dependencies:
   flutter_test:

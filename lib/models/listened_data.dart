@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class ListenedData {
   String id;
+  String datetime;
   String packageName;
   String title;
   String text;
@@ -12,6 +13,7 @@ class ListenedData {
 
   ListenedData({
     required this.id,
+    required this.datetime,
     required this.packageName,
     required this.title,
     required this.text,
@@ -26,6 +28,7 @@ class ListenedData {
     List<ListenedData> listenedNotificationDataList = decodedList.map((item) {
       return ListenedData(
         id: item['id'],
+        datetime: item['datetime'],
         packageName: item['packageName'],
         title: item['title'],
         text: item['text'],

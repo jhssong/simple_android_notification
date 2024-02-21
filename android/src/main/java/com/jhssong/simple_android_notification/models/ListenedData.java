@@ -5,7 +5,10 @@ import android.content.ContentValues;
 import android.os.Build;
 import android.os.Bundle;
 
+import java.util.Date;
+
 public class ListenedData {
+    public final String datetime;
     public final String packageName;
     public final String extraTitle;
     public final String extraText;
@@ -15,6 +18,7 @@ public class ListenedData {
     public final String extraSummaryText;
 
     public ListenedData(String packageName, Bundle extras) {
+        this.datetime = Long.toString(new Date().getTime());
         this.packageName = packageName;
         this.extraTitle = extras.getString(Notification.EXTRA_TITLE, "");
         this.extraText = extras.getString(Notification.EXTRA_TEXT, "");
@@ -28,6 +32,7 @@ public class ListenedData {
 
     public ContentValues getAsContentValues() {
         ContentValues values = new ContentValues();
+        values.put("datetime", datetime);
         values.put("packageName", packageName);
         values.put("title", extraTitle);
         values.put("text", extraText);

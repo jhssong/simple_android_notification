@@ -58,6 +58,7 @@ class _ListenerScreenState extends State<ListenerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       InfoBox(label: 'Id', value: list[i].id),
+                      InfoBox(label: 'Datetime', value: list[i].datetime),
                       InfoBox(label: 'PackageName', value: list[i].packageName),
                       InfoBox(label: 'Title', value: list[i].title),
                       InfoBox(label: 'Text', value: list[i].text),
