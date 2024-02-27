@@ -154,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void showNotificationDialog(BuildContext context) {
     final TextEditingController idController = TextEditingController();
     final TextEditingController titleController = TextEditingController();
-    final TextEditingController contentController = TextEditingController();
+    final TextEditingController textController = TextEditingController();
     final TextEditingController payloadController = TextEditingController();
     final formKey = GlobalKey<FormState>();
     showDialog(
@@ -179,8 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   InputBox(
                     maxLength: 60,
-                    controller: contentController,
-                    label: "Content",
+                    controller: textController,
+                    label: "Text",
                   ),
                   InputBox(
                     maxLength: 30,
@@ -196,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         var notificationData = NotificationData(
                             channelId: idController.text,
                             title: titleController.text,
-                            content: contentController.text,
+                            text: textController.text,
                             payload: payloadController.text);
                         showNotification(notificationData);
                       }

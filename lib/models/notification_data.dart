@@ -1,13 +1,13 @@
 class NotificationData {
   String channelId;
   String title;
-  String content;
+  String text;
   String payload;
 
   NotificationData({
     required this.channelId,
     required this.title,
-    required this.content,
+    required this.text,
     required this.payload,
   });
 
@@ -15,7 +15,7 @@ class NotificationData {
     return {
       'channelId': data.channelId,
       'title': data.title,
-      'content': data.content,
+      'text': data.text,
       'payload': data.payload,
     };
   }

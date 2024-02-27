@@ -5,21 +5,21 @@ import java.util.Map;
 public class NotificationData {
     public String channelId;
     public CharSequence title;
-    public String content;
+    public String text;
     public String payload;
 
-    public NotificationData(String channelId, CharSequence title, String content, String payload) {
+    public NotificationData(String channelId, CharSequence title, String text, String payload) {
         this.channelId = channelId;
         this.title = title;
-        this.content = content;
+        this.text = text;
         this.payload = payload;
     }
 
     public static NotificationData from(Map<String, Object> arguments) {
         String channelId = (String) arguments.get("channelId");
         CharSequence title = (String) arguments.get("title");
-        String content = (String) arguments.get("content");
+        String text = (String) arguments.get("text");
         String payload = (String) arguments.get("payload");
-        return new NotificationData(channelId, title, content, payload);
+        return new NotificationData(channelId, title, text, payload);
     }
 }

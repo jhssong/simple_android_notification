@@ -40,45 +40,37 @@ public class SimpleNotification {
     }
 
     public void checkNotificationChannelEnabled(MethodCall call, Result result) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            final String id = call.argument("id");
-            NotificationChannel channel = notificationManager.getNotificationChannel(id);
-            if (channel == null) result.success(false);
-            else result.success(channel.getImportance() != NotificationManager.IMPORTANCE_NONE);
-        } else result.success(true);
+        final String id = call.argument("id");
+        NotificationChannel channel = notificationManager.getNotificationChannel(id);
+        if (channel == null) result.success(false);
+        else result.success(channel.getImportance() != NotificationManager.IMPORTANCE_NONE);
     }
 
     public void createNotificationChannel(MethodCall call, Result result) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            Map<String, Object> arguments = call.arguments();
-            ChannelData data = ChannelData.from(arguments);
+        Map<String, Object> arguments = call.arguments();
+        ChannelData data = ChannelData.from(arguments);
 
-            NotificationChannel channel = new NotificationChannel(data.id, data.name, data.imp);
-            channel.setDescription(data.desc);
+        NotificationChannel channel = new NotificationChannel(data.id, data.name, data.imp);
+        channel.setDescription(data.desc);
 
-            notificationManager.createNotificationChannel(channel);
-        }
+        notificationManager.createNotificationChannel(channel);
         result.success(null);
     }
 
     public void getNotificationChannelList(Result result) {
         JSONArray array = new JSONArray();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            List<NotificationChannel> channels = notificationManager.getNotificationChannels();
+        List<NotificationChannel> channels = notificationManager.getNotificationChannels();
 
-            for (NotificationChannel channel : channels) {
-                ChannelData data = new ChannelData(channel);
-                array.put(data.getAsJSON(result));
-            }
+        for (NotificationChannel channel : channels) {
+            ChannelData data = new ChannelData(channel);
+            array.put(data.getAsJSON(result));
         }
         result.success(array.toString());
     }
 
     public void removeNotificationChannel(MethodCall call, Result result) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            final String id = call.argument("id");
-            notificationManager.deleteNotificationChannel(id);
-        }
+        final String id = call.argument("id");
+        notificationManager.deleteNotificationChannel(id);
         result.success(null);
     }
 
@@ -123,8 +115,10 @@ public class SimpleNotification {
                 context, Constants.NOTIFICATION_PENDING_INTENT_REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, data.channelId)
                 .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle(data.title).setContentText(data.content)
-                .setContentIntent(pendingIntent).setAutoCancel(true)
+                .setContentTitle(data.title)
+                .setContentText(data.text)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         try {
             notificationManager.notify(Constants.NOTIFICATION_NOTIFY_CODE, builder.build());
