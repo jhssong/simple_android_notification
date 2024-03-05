@@ -35,9 +35,13 @@ public class SimpleNotificationListenerService extends NotificationListenerServi
         SimpleNotificationListener simpleNotificationListener = new SimpleNotificationListener(context);
 
         String packageName = sbn != null ? sbn.getPackageName() : "Null";
+
         Bundle extras = sbn != null ? sbn.getNotification().extras : null;
         if (extras == null) return;
+
         ListenedData sbnData = new ListenedData(packageName, extras);
+        // if notification was empty then skip
+        if (sbnData.extraTitle.isEmpty() && sbnData.extraText.isEmpty()) return;
 
         JSONArray filterArray = simpleNotificationListener.getListenerFilter(packageName);
         boolean isFiltered = false;
