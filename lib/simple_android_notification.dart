@@ -199,10 +199,9 @@ class SimpleAndroidNotification {
     return ListenedData.toList(res);
   }
 
-  Future<void> removeListenedNotifications(ListenedData data) async {
+  Future<void> removeListenedNotifications(String id) async {
     try {
-      await _channel
-          .invokeMethod('removeListenedNotifications', {'id': data.id});
+      await _channel.invokeMethod('removeListenedNotifications', {'id': id});
     } on PlatformException catch (e) {
       log("${getErrorMsg(ErrorCode.UNKNOWN)} ${e.message ?? "null"}");
     }

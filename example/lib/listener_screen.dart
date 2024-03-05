@@ -69,7 +69,7 @@ class _ListenerScreenState extends State<ListenerScreen> {
                     ],
                   ),
                   IconButton(
-                    onPressed: () => removeListenedNotifications(list[i]),
+                    onPressed: () => removeListenedNotifications(list[i].id),
                     icon: const Icon(Icons.delete),
                   ),
                 ],
@@ -86,8 +86,8 @@ class _ListenerScreenState extends State<ListenerScreen> {
     setState(() => list = res);
   }
 
-  Future<void> removeListenedNotifications(ListenedData data) async {
-    await widget.plugin.removeListenedNotifications(data);
+  Future<void> removeListenedNotifications(String id) async {
+    await widget.plugin.removeListenedNotifications(id);
     await getListenedNotifications();
   }
 
